@@ -408,7 +408,15 @@ function selectCategory(catId) {
 // ═══ RENDER TEMPLATES ════════════════════════════════════════
 function getImageUrl(path) {
     if (!path) return '';
-    if (path.startsWith('http')) return path;
+    try {
+        if (path.startsWith('http://') || path.startsWith('https://')) {
+            const parsed = new URL(path);
+            if (parsed.origin !== window.location.origin) {
+                return window.location.origin + parsed.pathname + parsed.search;
+            }
+            return path;
+        }
+    } catch(e) {}
     return path.startsWith('/') ? path : '/' + path;
 }
 
@@ -718,20 +726,24 @@ function openAddModal() {
 function openEditModal(tpl) {
     document.getElementById('editing-id').value = tpl.id;
     document.getElementById('modal-title').innerHTML = '<i data-lucide="edit-3" class="w-5 h-5 text-wedding-pink-medium"></i> Edit Template Details';
-    document.getElementById('tpl-name').value = tpl.name;
-    document.getElementById('tpl-slug').value = tpl.slug;
-    document.getElementById('tpl-category').value = tpl.categoryId;
-    document.getElementById('tpl-premium').checked = tpl.isPremium;
-    document.getElementById('premium-label').textContent = tpl.isPremium ? 'Premium Lock' : 'Free Access';
-    document.getElementById('tpl-active').checked = tpl.isActive;
-    document.getElementById('active-label').textContent = tpl.isActive ? 'Published' : 'Hidden Draft';
+    document.getElementById('tpl-name').value = tpl.name || '';
+    document.getElementById('tpl-slug').value = tpl.slug || '';
+
+    // Premium / Active toggles
+    const isPremium = tpl.isPremium === true || tpl.isPremium === 1;
+    const isActive  = tpl.isActive  === true || tpl.isActive  === 1;
+    document.getElementById('tpl-premium').checked = isPremium;
+    document.getElementById('premium-label').textContent = isPremium ? 'Premium Lock' : 'Free Access';
+    document.getElementById('tpl-active').checked = isActive;
+    document.getElementById('active-label').textContent = isActive ? 'Published' : 'Hidden Draft';
     document.getElementById('tpl-price').value = tpl.singlePurchasePrice ?? 49;
-    document.getElementById('pricing-section').style.display = tpl.isPremium ? 'block' : 'none';
+    document.getElementById('pricing-section').style.display = isPremium ? 'block' : 'none';
     document.getElementById('bg-upload-section').style.display = 'none';
     document.getElementById('submit-btn').textContent = 'Update Details';
 
+    // Prepare selection state BEFORE populateModalSelectors
     const activeNames = allLanguages.map(l => l.name);
-    selectedFonts = tpl.fonts || [];
+    selectedFonts = Array.isArray(tpl.fonts) ? [...tpl.fonts] : [];
     selectedLangs = (tpl.languages || []).filter(lang => activeNames.includes(lang) || lang === 'English');
 
     selectedPlanIds = [];
@@ -743,11 +755,23 @@ function openEditModal(tpl) {
         }
     });
 
+    // Rebuild dropdown options first, THEN set the selected values
     populateModalSelectors();
     refreshSelectorHighlights();
 
-    hideAllErrors();
-    document.getElementById('thumbnail-text').textContent = 'Choose Thumbnail File';
+    // Set category AFTER dropdown is rebuilt (otherwise it gets reset)
+    if (tpl.categoryId) {
+        document.getElementById('tpl-category').value = tpl.categoryId;
+    }
+
+    // Show existing thumbnail if available
+    const thumbUrl = tpl.thumbnail ? getImageUrl(tpl.thumbnail) : null;
+    if (thumbUrl) {
+        document.getElementById('thumbnail-text').innerHTML =
+            `<img src="${thumbUrl}" alt="Current thumbnail" class="w-16 h-16 object-cover rounded-lg mx-auto mb-1"><span class="block text-[10px] text-gray-500">Click to change</span>`;
+    } else {
+        document.getElementById('thumbnail-text').textContent = 'Choose Thumbnail File';
+    }
     document.getElementById('thumbnail-file').value = '';
 
     lucide.createIcons({ nodeList: [document.getElementById('template-modal')] });

@@ -474,29 +474,490 @@
             animation: bounce 1.2s infinite alternate;
         }
         @keyframes bounce { from { transform: translateX(-50%) translateY(0); } to { transform: translateX(-50%) translateY(-4px); } }
+
+        /* ===== PREMIUM EDITOR SHELL OVERRIDES ===== */
+        :root {
+            --editor-primary: #FF4D6D;
+            --editor-primary-dark: #E73758;
+            --editor-ink: #181114;
+            --editor-muted: #75666B;
+            --editor-line: #ECE3E5;
+            --editor-soft: #F7F7F8;
+            --editor-card: #FFFFFF;
+            --editor-gold: #D6A642;
+        }
+
+        body {
+            background: #F4F5F7;
+        }
+
+        #editor-header {
+            height: 68px;
+            padding: 0 18px;
+            background: rgba(12, 10, 11, 0.96) !important;
+            backdrop-filter: blur(18px);
+            border-bottom: 1px solid rgba(255,255,255,0.08) !important;
+            box-shadow: 0 12px 34px rgba(10, 8, 9, 0.18);
+        }
+
+        .editor-header-left,
+        .editor-header-center,
+        .editor-header-right {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            min-width: 0;
+        }
+        .editor-header-left { flex: 1 1 0; }
+        .editor-header-center { flex: 0 0 auto; justify-content: center; }
+        .editor-header-right { flex: 1 1 0; justify-content: flex-end; }
+
+        .editor-top-btn,
+        .editor-select-shell,
+        .header-btn-group,
+        .header-zoom-group {
+            min-height: 42px;
+            border-radius: 14px;
+            border: 1px solid rgba(255,255,255,0.1);
+            background: rgba(255,255,255,0.065);
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.06), 0 8px 22px rgba(0,0,0,0.16);
+            transition: all 0.2s ease;
+        }
+
+        .editor-top-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            height: 42px;
+            padding: 0 14px;
+            border: none;
+            color: #F8F2F3;
+            font-size: 12px;
+            font-weight: 800;
+            white-space: nowrap;
+            cursor: pointer;
+        }
+        .editor-top-btn:hover,
+        .editor-select-shell:hover,
+        .header-btn-group:hover,
+        .header-zoom-group:hover {
+            transform: translateY(-1px);
+            border-color: rgba(255,77,109,0.32);
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.08), 0 12px 28px rgba(0,0,0,0.2);
+        }
+        .editor-top-btn.primary {
+            background: linear-gradient(135deg, var(--editor-primary), #FF2F60);
+            color: #fff;
+            box-shadow: 0 10px 26px rgba(255,77,109,0.34);
+        }
+        .editor-top-btn.gold {
+            background: linear-gradient(135deg, #FFD978, #F5B841);
+            color: #1B1214;
+            box-shadow: 0 10px 24px rgba(245,184,65,0.28);
+        }
+        .editor-top-btn.publish {
+            background: #FFFFFF;
+            color: #181114;
+        }
+        .premium-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            height: 22px;
+            padding: 0 9px;
+            border-radius: 999px;
+            background: linear-gradient(135deg, #FFE7A8, #D6A642);
+            color: #21160A;
+            font-size: 9px;
+            font-weight: 900;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            box-shadow: 0 8px 18px rgba(214,166,66,0.25);
+        }
+
+        .editor-main-shell {
+            background: #F3F4F6;
+        }
+        .left-shell {
+            width: 320px !important;
+            background: #FFF;
+            border-right: 1px solid var(--editor-line) !important;
+            box-shadow: 12px 0 30px rgba(20,16,18,0.05);
+        }
+        .left-content-panel {
+            padding: 18px 16px 92px !important;
+            background: linear-gradient(180deg, #FFFFFF 0%, #FBFBFC 100%) !important;
+        }
+        .panel-heading {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 10px;
+        }
+        .panel-heading h4 {
+            font-size: 12px !important;
+            color: #1F171A !important;
+            letter-spacing: 0.1em !important;
+        }
+        .panel-heading p {
+            font-size: 11px !important;
+            color: #7A6A70 !important;
+        }
+        .editor-search {
+            position: relative;
+        }
+        .editor-search i,
+        .editor-search svg {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #9A8B90;
+            width: 15px;
+            height: 15px;
+            pointer-events: none;
+            z-index: 2;
+        }
+        .editor-search input {
+            width: 100%;
+            height: 42px;
+            padding: 0 12px 0 36px;
+            border-radius: 14px;
+            border: 1px solid var(--editor-line);
+            background: #F7F7F8;
+            color: #181114;
+            font-size: 12px;
+            font-weight: 600;
+            outline: none;
+            transition: all 0.2s ease;
+        }
+        .editor-search input:focus {
+            background: #fff;
+            border-color: rgba(255,77,109,0.55);
+            box-shadow: 0 0 0 4px rgba(255,77,109,0.1);
+        }
+
+        .section-label {
+            margin-top: 18px;
+            margin-bottom: 10px;
+            color: #6E6166;
+            letter-spacing: 0.12em;
+        }
+        .preset-card,
+        .premium-preset-card {
+            position: relative;
+            display: block;
+            min-height: 76px;
+            padding: 14px 14px 14px 58px !important;
+            border-radius: 16px !important;
+            background: #fff !important;
+            border: 1px solid var(--editor-line) !important;
+            box-shadow: 0 8px 22px rgba(25,18,21,0.045) !important;
+        }
+        .preset-card::before,
+        .premium-preset-card::before {
+            content: '';
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 34px;
+            height: 34px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, rgba(255,77,109,0.13), rgba(214,166,66,0.18));
+            border: 1px solid rgba(255,77,109,0.14);
+        }
+        .premium-preset-card::after {
+            content: '';
+            position: absolute;
+            left: 25px;
+            top: 50%;
+            width: 12px;
+            height: 12px;
+            transform: translateY(-50%);
+            border-radius: 4px;
+            background: var(--editor-primary);
+            box-shadow: 0 0 0 4px rgba(255,77,109,0.12);
+        }
+        .preset-card:hover,
+        .premium-preset-card:hover {
+            transform: translateY(-2px) scale(1.01);
+            border-color: rgba(255,77,109,0.48) !important;
+            box-shadow: 0 14px 30px rgba(25,18,21,0.09) !important;
+        }
+
+        #canvas-area {
+            background: #EEF0F3 !important;
+            min-width: 0;
+        }
+        .canvas-viewport-bg {
+            background-color: #F1F2F4;
+            background-image:
+                radial-gradient(circle at center, rgba(255,255,255,0.7) 0%, rgba(241,242,244,0.58) 44%, rgba(225,228,233,0.9) 100%),
+                linear-gradient(to right, rgba(32,36,44,0.045) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(32,36,44,0.045) 1px, transparent 1px);
+            background-size: auto, 24px 24px, 24px 24px;
+        }
+        #canvas-viewport {
+            scrollbar-width: none;
+        }
+        #canvas-viewport::-webkit-scrollbar {
+            display: none;
+        }
+        #canvas-wrapper {
+            min-height: 100% !important;
+            padding: 104px clamp(28px, 5vw, 84px) 58px !important;
+            justify-content: flex-start !important;
+        }
+        #canvas-card {
+            border: 1px solid rgba(24,17,20,0.12) !important;
+            border-radius: 14px;
+            box-shadow:
+                0 28px 80px rgba(24,17,20,0.18),
+                0 2px 0 rgba(255,255,255,0.8) inset !important;
+        }
+        #canvas-card:hover {
+            box-shadow:
+                0 34px 90px rgba(24,17,20,0.22),
+                0 2px 0 rgba(255,255,255,0.8) inset !important;
+        }
+        #page-toolbar {
+            top: -72px !important;
+            height: 48px !important;
+            width: clamp(420px, 45vw, 560px) !important;
+            min-width: 0 !important;
+            max-width: calc(100vw - 720px) !important;
+        }
+        #page-toolbar > div {
+            height: 48px !important;
+            border-radius: 18px !important;
+            background: rgba(22,18,20,0.78) !important;
+            backdrop-filter: blur(18px) saturate(150%);
+            border: 1px solid rgba(255,255,255,0.16) !important;
+            box-shadow: 0 18px 44px rgba(20,16,18,0.28), inset 0 1px 0 rgba(255,255,255,0.12) !important;
+            padding: 0 10px !important;
+            gap: 10px !important;
+        }
+        #page-toolbar button {
+            min-width: 34px;
+            height: 34px;
+            border-radius: 11px;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            white-space: nowrap;
+        }
+        #page-toolbar button:hover {
+            transform: translateY(-1px);
+        }
+        #page-counter {
+            display: inline-flex;
+            align-items: center;
+            height: 28px;
+            padding: 0 10px;
+            border-radius: 999px;
+            background: rgba(255,255,255,0.1);
+            color: #FFE2A2 !important;
+            flex: 0 0 auto;
+            white-space: nowrap;
+        }
+        #page-toolbar .page-toolbar-actions {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 4px;
+            min-width: 0;
+            flex: 1;
+        }
+        #page-toolbar .page-action-text {
+            display: inline;
+        }
+
+        #storyboard-bar {
+            height: 140px !important;
+            padding: 14px 20px 12px !important;
+            background: rgba(255,255,255,0.86) !important;
+            backdrop-filter: blur(16px);
+            border-top: 1px solid rgba(24,17,20,0.08) !important;
+            box-shadow: 0 -18px 40px rgba(24,17,20,0.06);
+            overflow: hidden !important;
+        }
+        #storyboard {
+            gap: 14px !important;
+            padding: 2px 4px 0 !important;
+            overflow: hidden !important;
+            flex-wrap: nowrap;
+            max-width: 100%;
+            height: 92px;
+        }
+        #storyboard::-webkit-scrollbar,
+        #storyboard-bar::-webkit-scrollbar {
+            display: none;
+        }
+        .storyboard-card,
+        .storyboard-add-card {
+            width: 58px;
+            height: 92px;
+            flex: 0 0 auto;
+            border-radius: 12px;
+            position: relative;
+            overflow: hidden;
+            background: #F7F7F8;
+            border: 1px solid #E8E1E3;
+            box-shadow: 0 10px 24px rgba(24,17,20,0.08);
+            transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+            scroll-snap-align: start;
+        }
+        .storyboard-card:hover,
+        .storyboard-add-card:hover {
+            transform: translateY(-3px);
+            border-color: rgba(255,77,109,0.45);
+            box-shadow: 0 16px 30px rgba(24,17,20,0.13);
+        }
+        .storyboard-card.is-active {
+            border-color: #FF4D6D;
+            box-shadow: 0 0 0 2px #FF4D6D, 0 18px 34px rgba(255,77,109,0.18);
+        }
+        .storyboard-action-stack,
+        .storyboard-drag-handle {
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+        .storyboard-card:hover .storyboard-action-stack,
+        .storyboard-card:hover .storyboard-drag-handle {
+            opacity: 1;
+        }
+        .storyboard-add-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            border-style: dashed;
+            color: #8B7B80;
+            cursor: pointer;
+        }
+        .sticker-card {
+            width: 100%;
+            aspect-ratio: 1;
+            padding: 12px;
+            border-radius: 16px;
+            border: 1px solid #ECE3E5;
+            background: #fff;
+            box-shadow: 0 8px 22px rgba(25,18,21,0.045);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .sticker-card:hover {
+            transform: translateY(-2px);
+            border-color: rgba(255,77,109,0.5);
+            box-shadow: 0 14px 30px rgba(25,18,21,0.09);
+        }
+        .sticker-card img {
+            width: 74px;
+            height: 74px;
+            object-fit: contain;
+            transition: transform 0.2s ease;
+        }
+        .sticker-card:hover img {
+            transform: scale(1.08);
+        }
+
+        .right-panel {
+            width: 288px !important;
+            background: #F8F8FA !important;
+            border-left: 1px solid var(--editor-line) !important;
+            box-shadow: -12px 0 30px rgba(20,16,18,0.045);
+        }
+        .right-panel > div {
+            padding: 20px 16px 92px !important;
+        }
+        .prop-card,
+        .instruction-item {
+            background: #fff !important;
+            border-color: var(--editor-line) !important;
+            border-radius: 16px !important;
+            box-shadow: 0 10px 28px rgba(25,18,21,0.045) !important;
+        }
+        .rpanel-section-h {
+            font-family: 'Inter', sans-serif;
+            font-size: 16px;
+            letter-spacing: 0;
+        }
+
+        @media (max-width: 1280px) {
+            .left-shell { width: 292px !important; }
+            .right-panel { width: 260px !important; }
+            .editor-top-btn { padding: 0 11px; }
+            #page-toolbar {
+                width: 440px !important;
+                max-width: calc(100vw - 620px) !important;
+            }
+            #page-toolbar .page-action-text {
+                display: none;
+            }
+        }
+
+        @media (max-width: 1024px) {
+            #editor-header {
+                height: auto;
+                min-height: 68px;
+                flex-wrap: wrap;
+                gap: 10px;
+                padding: 10px 12px;
+            }
+            .editor-header-left,
+            .editor-header-right {
+                flex: 1 1 360px;
+            }
+            .editor-header-center {
+                order: 3;
+                flex: 1 1 100%;
+            }
+            .left-shell { width: 274px !important; }
+            .right-panel { width: 250px !important; }
+            #canvas-wrapper { padding-left: 24px !important; padding-right: 24px !important; }
+            #page-toolbar {
+                width: min(440px, calc(100vw - 340px)) !important;
+                max-width: none !important;
+            }
+        }
+
+        @media (max-width: 860px) {
+            .right-panel { display: none; }
+            .left-shell { width: 300px !important; }
+            #storyboard-bar { height: 128px !important; }
+        }
     </style>
 </head>
 <body class="flex flex-col h-screen overflow-hidden bg-[#FAF8F5]">
 
 
 {{-- Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ HEADER TOOLBAR Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ --}}
-<div id="editor-header" class="h-14 text-white px-4 flex items-center justify-between shrink-0" style="background:#0B0809; border-bottom:1px solid rgba(255,202,210,0.07);">
+<div id="editor-header" class="text-white flex items-center justify-between shrink-0">
     {{-- Left: Back + Template name --}}
-    <div class="flex items-center gap-3" style="min-width:0; max-width:28%;">
-        <button onclick="goBack()" title="Back to Templates" style="width:34px;height:34px;border-radius:10px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,202,210,0.08);display:flex;align-items:center;justify-content:center;color:#9A8285;cursor:pointer;transition:all 0.15s;flex-shrink:0;" onmouseover="this.style.background='rgba(255,62,92,0.12)';this.style.color='#FF3E5C'" onmouseout="this.style.background='rgba(255,255,255,0.05)';this.style.color='#9A8285'">
+    <div class="editor-header-left">
+        <button onclick="goBack()" title="Back to Templates" class="editor-top-btn" style="width:42px;padding:0;flex-shrink:0;">
             <i data-lucide="arrow-left" class="w-4 h-4"></i>
         </button>
         <div style="min-width:0;">
             <div style="display:flex;align-items:center;gap:6px;">
                 <span style="width:6px;height:6px;border-radius:50%;background:#FF3E5C;flex-shrink:0;"></span>
                 <h3 id="editor-tpl-name" style="font-size:12px;font-weight:800;color:#FFF4E6;text-transform:uppercase;letter-spacing:0.06em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"></h3>
+                <span class="premium-badge"><i data-lucide="crown" style="width:11px;height:11px;"></i> Premium</span>
             </div>
             <p id="editor-tpl-slug" style="font-size:9px;color:#4A3539;font-family:monospace;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"></p>
         </div>
     </div>
 
     {{-- Center: Undo/Redo + Zoom --}}
-    <div style="display:flex;align-items:center;gap:8px;">
+    <div class="editor-header-center">
         <div class="header-btn-group">
             <button onclick="editorUndo()" id="undo-btn" disabled class="header-icon-btn" title="Undo (Ctrl+Z)">
                 <i data-lucide="undo-2" class="w-4 h-4"></i>
@@ -518,27 +979,31 @@
     </div>
 
     {{-- Right: Autosave + Language + Preview + Save --}}
-    <div style="display:flex;align-items:center;gap:8px;">
+    <div class="editor-header-right">
         <span id="autosave-badge" class="autosave-badge">
             <span class="autosave-dot"></span>
             <span class="hidden lg:inline">Auto-Save Active</span>
         </span>
 
-        <div style="display:flex;align-items:center;gap:6px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,202,210,0.08);border-radius:10px;padding:5px 10px;">
+        <div class="editor-select-shell" style="display:flex;align-items:center;gap:6px;padding:0 12px;">
             <i data-lucide="languages" style="width:14px;height:14px;color:#9A8285;flex-shrink:0;"></i>
             <select id="lang-select" onchange="handleLanguageChange(this.value)" style="background:transparent;font-size:11px;font-weight:700;color:#C8B8BB;border:none;outline:none;cursor:pointer;">
                 <option value="English" style="background:#1C1416;">English</option>
             </select>
         </div>
 
-        <button onclick="openPreview()" title="Live Preview" style="display:flex;align-items:center;gap:6px;padding:7px 14px;background:#FF3E5C;color:#fff;font-size:11px;font-weight:700;border-radius:10px;border:none;cursor:pointer;transition:all 0.2s;box-shadow:0 4px 12px rgba(255,62,92,0.3);" onmouseover="this.style.transform='translateY(-1px)';this.style.boxShadow='0 6px 18px rgba(255,62,92,0.45)'" onmouseout="this.style.transform='';this.style.boxShadow='0 4px 12px rgba(255,62,92,0.3)'">
+        <button onclick="openPreview()" title="Live Preview" class="editor-top-btn primary">
             <i data-lucide="eye" class="w-4 h-4"></i>
             <span class="hidden md:inline">Live Preview</span>
         </button>
 
-        <button onclick="manualSave()" id="save-btn" title="Save Draft" style="display:flex;align-items:center;gap:6px;padding:7px 16px;background:#F7C566;color:#0B0809;font-size:11px;font-weight:800;border-radius:10px;border:none;cursor:pointer;transition:all 0.2s;box-shadow:0 4px 12px rgba(247,197,102,0.25);" onmouseover="this.style.background='#C9943B';this.style.transform='translateY(-1px)'" onmouseout="this.style.background='#F7C566';this.style.transform=''">
+        <button onclick="manualSave()" id="save-btn" title="Save Draft" class="editor-top-btn gold">
             <i data-lucide="save" class="w-4 h-4"></i>
             <span class="hidden md:inline">Save Draft</span>
+        </button>
+        <button type="button" title="Publish action is not configured in this editor yet" class="editor-top-btn publish" disabled style="opacity:0.72;cursor:not-allowed;">
+            <i data-lucide="send" class="w-4 h-4"></i>
+            <span class="hidden xl:inline">Publish</span>
         </button>
     </div>
 </div>
@@ -550,10 +1015,10 @@
 </div>
 
 {{-- Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ MAIN 3-PANEL LAYOUT Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ --}}
-<div class="flex-1 flex overflow-hidden" style="position: relative; z-index: 10;">
+<div class="editor-main-shell flex-1 flex overflow-hidden" style="position: relative; z-index: 10;">
 
     {{-- Ã¢â€¢ÂÃ¢â€¢Â LEFT PANEL Ã¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢Â --}}
-    <div style="width:288px;border-right:1px solid #E5E7EB;display:flex;flex-shrink:0;z-index:10;">
+    <div class="left-shell" style="border-right:1px solid #E5E7EB;display:flex;flex-shrink:0;z-index:10;">
         {{-- Icon tabs column --}}
         <div class="left-icon-col" style="width:64px;display:flex;flex-direction:column;align-items:center;padding:12px 0;gap:2px;flex-shrink:0;user-select:none;">
             <button onclick="setLeftTab('text')" id="tab-text" class="tab-icon-btn active-tab" title="Text">
@@ -579,13 +1044,19 @@
         </div>
 
         {{-- Panel content --}}
-        <div style="flex:1;padding:16px 14px 80px 14px;overflow-y:auto;display:flex;flex-direction:column;gap:14px;background:#ffffff;color:#1A1516;">
+        <div class="left-content-panel" style="flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:14px;color:#1A1516;">
 
             {{-- Text Tab --}}
             <div id="panel-text" style="display:flex;flex-direction:column;gap:14px;">
-                <div>
+                <div class="panel-heading">
+                    <div>
                     <h4 style="color:#1A1516;font-size:10px;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;">Text Typographies</h4>
                     <p style="color:#6B7280;font-size:10px;margin-top:4px;line-height:1.5;">Insert custom text nodes into the current page.</p>
+                    </div>
+                </div>
+                <div class="editor-search">
+                    <i data-lucide="search" style="width:14px;height:14px;"></i>
+                    <input id="left-search-input" type="search" placeholder="Search text styles">
                 </div>
 
                 <div id="translate-progress" style="padding:10px 12px;background:rgba(247,197,102,0.1);border:1px solid rgba(247,197,102,0.35);color:#C9943B;font-size:10px;font-weight:700;border-radius:10px;display:none;align-items:center;justify-content:center;gap:6px;">
@@ -727,7 +1198,7 @@
                 <div id="page-toolbar" class="absolute" style="top: -48px; left: 50%; transform: translateX(-50%); width: max-content; min-width: 320px; height: 40px; display: flex; align-items: center; justify-content: space-between; z-index: 10005;">
                     <div class="w-full h-full bg-[rgba(15,10,12,0.92)] backdrop-blur-md border border-[rgba(255,202,210,0.12)] rounded-xl px-3 text-white shadow-xl select-none flex items-center justify-between gap-6">
                         <span id="page-counter" class="text-[11px] font-extrabold text-[#E6C280] tracking-wider uppercase font-mono">Page 1 of 1</span>
-                        <div class="flex items-center gap-1">
+                        <div class="page-toolbar-actions">
                             <button onclick="movePageUp()" id="page-up-btn" class="p-1.5 hover:bg-white/10 disabled:opacity-30 rounded-lg transition-colors text-gray-300 hover:text-white" title="Move Page Up">
                                 <i data-lucide="chevron-up" class="w-4 h-4"></i>
                             </button>
@@ -736,14 +1207,14 @@
                             </button>
                             <span class="w-px h-4 bg-white/10 mx-1"></span>
                             <button onclick="duplicateCurrentPage()" class="p-1.5 hover:bg-white/10 rounded-lg transition-colors text-gray-300 hover:text-white flex items-center gap-1 text-[11px] font-bold" title="Duplicate Page">
-                                <i data-lucide="copy" class="w-3.5 h-3.5"></i> <span class="hidden sm:inline">Duplicate</span>
+                                <i data-lucide="copy" class="w-3.5 h-3.5"></i> <span class="page-action-text">Duplicate</span>
                             </button>
                             <button onclick="deleteCurrentPage()" id="page-delete-btn" class="p-1.5 hover:bg-red-500/20 hover:text-red-300 rounded-lg transition-colors text-gray-300 flex items-center gap-1 text-[11px] font-bold" title="Delete Page">
-                                <i data-lucide="trash-2" class="w-3.5 h-3.5"></i> <span class="hidden sm:inline">Delete</span>
+                                <i data-lucide="trash-2" class="w-3.5 h-3.5"></i> <span class="page-action-text">Delete</span>
                             </button>
                             <span class="w-px h-4 bg-white/10 mx-1"></span>
                             <button onclick="addPage()" class="p-1.5 hover:bg-[rgba(255,62,92,0.3)] text-[#FFF4E6] hover:text-white rounded-lg transition-colors flex items-center gap-1 text-[11px] font-extrabold" title="Add New Page">
-                                <i data-lucide="plus" class="w-3.5 h-3.5"></i> <span class="hidden sm:inline">Add Page</span>
+                                <i data-lucide="plus" class="w-3.5 h-3.5"></i> <span class="page-action-text">Add Page</span>
                             </button>
                         </div>
                     </div>
@@ -1046,6 +1517,7 @@ const editorState = {
     selectedPageIndex: 0,
     selectedElementId: null,
     zoom: 40,
+    userZoomed: false,
     selectedLanguage: 'English',
     undoStack: [],
     redoStack: [],
@@ -1082,6 +1554,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     lucide.createIcons();
     renderPremiumPresets();
     renderStickersGrid();
+    setupLeftPanelSearch();
 
     if (!window.__TEMPLATE_ID__) {
         showToast('No template ID provided.', 'error');
@@ -1102,10 +1575,23 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // Window resize
     window.addEventListener('resize', () => {
-        renderCanvas();
+        if (!editorState.userZoomed) fitCanvasToViewport();
+        else renderCanvas();
         renderStoryboard();
     });
 });
+
+function setupLeftPanelSearch() {
+    const input = document.getElementById('left-search-input');
+    if (!input) return;
+    input.addEventListener('input', () => {
+        const query = input.value.trim().toLowerCase();
+        document.querySelectorAll('#panel-text .preset-card, #panel-text .premium-preset-card').forEach(card => {
+            const matches = !query || card.textContent.toLowerCase().includes(query);
+            card.style.display = matches ? 'block' : 'none';
+        });
+    });
+}
 
 async function loadTemplate(id) {
     try {
@@ -1124,7 +1610,7 @@ async function loadTemplate(id) {
         document.getElementById('info-fonts').textContent = (data.fonts || []).join(', ') || '-';
         document.getElementById('info-langs').textContent = (data.languages || []).join(', ') || '-';
 
-        renderCanvas();
+        fitCanvasToViewport();
         renderStoryboard();
         renderPagesList();
         updatePageToolbar();
@@ -1177,7 +1663,20 @@ async function loadFonts() {
 // Ã¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢Â
 // ZOOM & CANVAS SIZING
 // Ã¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢Â
-function setZoom(val) {
+function fitCanvasToViewport() {
+    const viewport = document.getElementById('canvas-viewport');
+    if (!viewport) return;
+    const availableW = Math.max(320, viewport.clientWidth - 96);
+    const availableH = Math.max(420, viewport.clientHeight - 144);
+    const widthFit = availableW / LOGICAL_W;
+    const heightComfort = (availableH / LOGICAL_H) * 1.35;
+    const fit = Math.min(widthFit, Math.max(widthFit * 0.82, heightComfort));
+    const nextZoom = Math.max(28, Math.min(35, Math.floor(fit * 100)));
+    setZoom(nextZoom, true);
+}
+
+function setZoom(val, isAuto = false) {
+    if (!isAuto) editorState.userZoomed = true;
     editorState.zoom = Math.max(10, Math.min(200, val));
     document.getElementById('zoom-display').textContent = `${editorState.zoom}%`;
     renderCanvas();
@@ -1220,7 +1719,15 @@ function renderCanvas() {
 // Ã¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢Â
 function getImageUrl(path) {
     if (!path) return '';
-    if (path.startsWith('http')) return path;
+    try {
+        if (path.startsWith('http://') || path.startsWith('https://')) {
+            const parsed = new URL(path);
+            if (parsed.origin !== window.location.origin) {
+                return window.location.origin + parsed.pathname + parsed.search;
+            }
+            return path;
+        }
+    } catch(e) {}
     return path.startsWith('/') ? path : '/' + path;
 }
 
@@ -1997,17 +2504,14 @@ function renderStoryboard() {
     const storyboard = document.getElementById('storyboard');
     storyboard.innerHTML = '';
 
-    const thumbScale = 0.05;
+    const thumbScale = 0.046;
 
     editorState.template.pages.forEach((page, idx) => {
         const isSelected = idx === editorState.selectedPageIndex;
 
         const card = document.createElement('div');
         card.draggable = true;
-        card.className = `relative cursor-pointer transition-all duration-250 flex-shrink-0 group ${isSelected
-            ? 'ring-2 ring-[#FF3E5C] scale-[1.03] shadow-md shadow-[rgba(255,62,92,0.15)]'
-            : 'hover:ring-1 hover:ring-[#FFCAD2]'}`;
-        card.style.cssText = 'width: 54px; height: 96px; border-radius: 4px; overflow: hidden; background: #FAF8F5; border: 1px solid #E5E7EB;';
+        card.className = `storyboard-card${isSelected ? ' is-active' : ''}`;
 
         if (page.backgroundImage) {
             const img = document.createElement('img');
@@ -2028,8 +2532,23 @@ function renderStoryboard() {
             card.appendChild(dot);
         });
 
+        const dragHandle = document.createElement('div');
+        dragHandle.className = 'storyboard-drag-handle';
+        dragHandle.style.cssText = 'position:absolute;top:6px;left:6px;width:22px;height:22px;border-radius:8px;background:rgba(255,255,255,0.92);border:1px solid #E8E1E3;display:flex;align-items:center;justify-content:center;color:#8B7B80;z-index:20;';
+        dragHandle.innerHTML = '<i data-lucide="grip-vertical" class="w-3 h-3"></i>';
+        card.appendChild(dragHandle);
+
+        const actions = document.createElement('div');
+        actions.className = 'storyboard-action-stack';
+        actions.style.cssText = 'position:absolute;top:6px;right:6px;display:flex;flex-direction:column;gap:4px;z-index:20;';
+        actions.innerHTML = `
+            <button onclick="event.stopPropagation(); duplicatePageByIdx(${idx})" style="width:22px;height:22px;border-radius:8px;background:rgba(255,255,255,0.96);border:1px solid #E8E1E3;display:flex;align-items:center;justify-content:center;color:#181114;cursor:pointer;" title="Duplicate"><i data-lucide="copy" class="w-3 h-3"></i></button>
+            ${editorState.template.pages.length > 1 ? `<button onclick="event.stopPropagation(); deletePageByIdx(${idx})" style="width:22px;height:22px;border-radius:8px;background:rgba(255,255,255,0.96);border:1px solid #E8E1E3;display:flex;align-items:center;justify-content:center;color:#EF4444;cursor:pointer;" title="Delete"><i data-lucide="trash-2" class="w-3 h-3"></i></button>` : ''}
+        `;
+        card.appendChild(actions);
+
         const badge = document.createElement('div');
-        badge.className = 'absolute bottom-1 right-1 bg-white border border-[#E5E7EB] px-1 rounded text-[8px] font-extrabold text-[#1A1516] font-mono z-10';
+        badge.style.cssText = 'position:absolute;right:6px;bottom:6px;z-index:10;background:#fff;border:1px solid #E5E7EB;border-radius:7px;padding:2px 6px;font-size:8px;font-weight:900;color:#1A1516;font-family:monospace;box-shadow:0 2px 6px rgba(24,17,20,0.08);';
         badge.textContent = idx + 1;
         card.appendChild(badge);
 
@@ -2057,8 +2576,8 @@ function renderStoryboard() {
     const addBtn = document.createElement('button');
     addBtn.type = 'button';
     addBtn.onclick = addPage;
-    addBtn.className = 'w-[54px] h-[96px] flex-shrink-0 border border-dashed border-[#E5E7EB] hover:border-[#FF3E5C] hover:bg-[#FFF1F2] rounded flex flex-col items-center justify-center gap-1 text-[#9CA3AF] hover:text-[#FF3E5C] transition-all duration-300';
-    addBtn.innerHTML = `<i data-lucide="plus" class="w-4 h-4"></i><span style="font-size: 8px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em;">Add</span>`;
+    addBtn.className = 'storyboard-add-card';
+    addBtn.innerHTML = `<span style="width:34px;height:34px;border-radius:999px;background:#fff;border:1px solid #E8E1E3;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(24,17,20,0.08);"><i data-lucide="plus" class="w-4 h-4"></i></span><span style="font-size:8px;font-weight:900;text-transform:uppercase;letter-spacing:0.08em;">Add</span>`;
     storyboard.appendChild(addBtn);
 
     lucide.createIcons({ nodeList: [storyboard] });
@@ -2151,12 +2670,12 @@ function renderPremiumPresets() {
     container.innerHTML = '';
     PRESETS.forEach((p, idx) => {
         const btn = document.createElement('button');
-        btn.className = 'w-full text-left p-3.5 border border-[rgba(255,202,210,0.35)] hover:border-[#FF3E5C] bg-white hover:bg-[rgba(255,240,242,0.1)] rounded-2xl shadow-sm hover:shadow transition-all group flex flex-col justify-between';
+        btn.className = 'premium-preset-card group';
         btn.onclick = () => addPresetFromTemplate(p);
         btn.innerHTML = `
-            <span class="text-[10px] font-extrabold text-[#FF3E5C] uppercase tracking-wider">${escapeHtml(p.name)}</span>
-            <span class="block text-xs text-[#161112] font-semibold mt-1 font-serif line-clamp-2 leading-relaxed whitespace-pre-wrap">${escapeHtml(p.text)}</span>
-            <span class="text-[9px] text-gray-400 mt-1 block">${escapeHtml(p.description)}</span>
+            <span style="display:block;font-size:10px;font-weight:900;color:#FF4D6D;text-transform:uppercase;letter-spacing:0.08em;">${escapeHtml(p.name)}</span>
+            <span style="display:block;font-size:12px;color:#181114;font-weight:700;margin-top:4px;line-height:1.35;white-space:pre-wrap;">${escapeHtml(p.text)}</span>
+            <span class="preset-label">${escapeHtml(p.description)}</span>
         `;
         container.appendChild(btn);
     });

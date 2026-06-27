@@ -324,6 +324,7 @@
     let userGrowthRange = '6m';
     let distributionRange = 'this_month';
     let subGrowthRange = '6m';
+    let currentTab = 'general';
 
     // Set administrator display name
     if (window.CurrentUser && window.CurrentUser.displayName) {
@@ -338,6 +339,8 @@
     setInterval(loadDashboardData, 10000);
 
     function switchTab(tab) {
+        currentTab = tab; // Track current tab
+
         // Toggle tab buttons
         document.querySelectorAll('.tab-btn').forEach(btn => {
             btn.classList.remove('bg-wedding-charcoal-dark', 'text-wedding-gold-light', 'shadow-md');
@@ -383,7 +386,8 @@
 
             // Hide loading indicator
             document.getElementById('dashboard-loading').classList.add('hidden');
-            document.getElementById('panel-general').classList.remove('hidden');
+            // Show the current active tab instead of always showing general
+            document.getElementById(`panel-${currentTab}`).classList.remove('hidden');
 
             // Render stats data
             if (resSummary) {

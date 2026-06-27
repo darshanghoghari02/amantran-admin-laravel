@@ -32,6 +32,17 @@ Route::get('/assets/fonts/{filename}', function ($filename) {
     return response()->file($path);
 });
 
+// Route to serve any static assets (like categories and template images) 
+// that might be stored in the public folder but not directly accessible
+// (e.g. on shared hosting environments where public path differs).
+Route::get('/assets/{path}', function ($path) {
+    $fullPath = public_path('assets/' . $path);
+    if (!file_exists($fullPath) || !is_file($fullPath)) {
+        abort(404);
+    }
+    return response()->file($fullPath);
+})->where('path', '.*');
+
 Route::prefix('admin')->group(function () {
     // Session authentication endpoints
     Route::get('/login', [AuthController::class, 'showLogin'])->name('admin.login');

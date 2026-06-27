@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
 
 /**
@@ -13,21 +14,31 @@ use Illuminate\Support\Str;
  *   - `data` LONGTEXT      (JSON-encoded object)
  *
  * This allows 1:1 compatibility with the existing MySQL database.
+ *
+ * Performance: getAll() uses a short-lived cache (30s) to prevent
+ * redundant full-table scans across multiple API calls per page load.
  */
 class DbService
 {
+    /** 
+     * Tables to cache aggressively (read-heavy, rarely written).
+     */
+    private const CACHE_TTL_SECONDS = 30;
+
     /**
-     * Get all records from a table.
-     * Returns an array of decoded objects (arrays with id merged in).
+     * Get all records from a table, with optional short-lived caching.
      */
     public function getAll(string $table): array
     {
-        $rows = DB::table($table)->get();
-        return $rows->map(fn($row) => $this->decode($row))->toArray();
+        $cacheKey = "db_table_{$table}";
+        return Cache::remember($cacheKey, self::CACHE_TTL_SECONDS, function () use ($table) {
+            $rows = DB::table($table)->get();
+            return $rows->map(fn($row) => $this->decode($row))->toArray();
+        });
     }
 
     /**
-     * Get a single record by ID.
+     * Get a single record by ID (no cache — fast primary key lookup).
      */
     public function getOne(string $table, string $id): ?array
     {
@@ -65,8 +76,7 @@ class DbService
     }
 
     /**
-     * Add a new record.
-     * Generates a unique ID if not provided.
+     * Add a new record. Invalidates the table cache.
      */
     public function add(string $table, array $data): array
     {
@@ -88,11 +98,14 @@ class DbService
             'data' => json_encode($data, JSON_UNESCAPED_UNICODE),
         ]);
 
+        Cache::forget("db_table_{$table}");
+
         return $record;
     }
 
     /**
      * Update an existing record by ID (partial update — merges with existing data).
+     * Invalidates the table cache.
      */
     public function update(string $table, string $id, array $updates): array
     {
@@ -109,15 +122,21 @@ class DbService
             'data' => json_encode($merged, JSON_UNESCAPED_UNICODE),
         ]);
 
+        Cache::forget("db_table_{$table}");
+
         return array_merge(['id' => $id], $merged);
     }
 
     /**
-     * Delete a record by ID.
+     * Delete a record by ID. Invalidates the table cache.
      */
     public function delete(string $table, string $id): bool
     {
-        return DB::table($table)->where('id', $id)->delete() > 0;
+        $result = DB::table($table)->where('id', $id)->delete() > 0;
+        if ($result) {
+            Cache::forget("db_table_{$table}");
+        }
+        return $result;
     }
 
     /**

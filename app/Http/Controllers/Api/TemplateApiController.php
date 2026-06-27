@@ -53,6 +53,11 @@ class TemplateApiController extends Controller
                 'thumbnail'    => $thumb,
                 'isActive'     => $request->isActive !== false,
                 'isPremium'    => $request->isPremium === true,
+                'fonts'        => $request->fonts ?? [],
+                'languages'    => $request->languages ?? [],
+                'singlePurchasePrice' => $request->singlePurchasePrice ?? 0,
+                'includedInMonthlyPlan' => $request->includedInMonthlyPlan ?? false,
+                'includedInYearlyPlan' => $request->includedInYearlyPlan ?? false,
                 'pages'        => $request->pages ?? [
                     [
                         'id' => 'page_1',
@@ -168,6 +173,9 @@ class TemplateApiController extends Controller
                 }
             }
 
+            // 3. Delete the entire template folder from assets
+            $this->deleteTemplateFolder($template['slug'] ?? '');
+
             $this->db->delete('templates', $id);
 
             $this->permissions->logAuditEvent($userId, "Deleted template: {$template['name']}", 'Templates');
@@ -219,5 +227,48 @@ class TemplateApiController extends Controller
                 }
             }
         }
+    }
+
+    /**
+     * Delete the entire template folder from assets directory.
+     */
+    private function deleteTemplateFolder(?string $slug)
+    {
+        if (!$slug) return;
+
+        // Check both wedding and engagement directories
+        $categories = ['wedding', 'engagement'];
+        
+        foreach ($categories as $category) {
+            $folderPath = public_path("assets/{$category}/{$slug}");
+            
+            if (is_dir($folderPath)) {
+                $this->deleteDirectory($folderPath);
+            }
+        }
+    }
+
+    /**
+     * Recursively delete a directory and its contents.
+     */
+    private function deleteDirectory($dir)
+    {
+        if (!is_dir($dir)) {
+            return;
+        }
+
+        $files = array_diff(scandir($dir), ['.', '..']);
+        
+        foreach ($files as $file) {
+            $path = $dir . DIRECTORY_SEPARATOR . $file;
+            
+            if (is_dir($path)) {
+                $this->deleteDirectory($path);
+            } else {
+                unlink($path);
+            }
+        }
+        
+        rmdir($dir);
     }
 }

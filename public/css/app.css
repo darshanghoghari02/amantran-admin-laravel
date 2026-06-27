@@ -1,0 +1,64 @@
+@import 'tailwindcss';
+
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../storage/framework/views/*.php';
+@source "../**/*.blade.php";
+@source "../**/*.js";
+@source "../**/*.vue";
+
+@theme {
+    --color-wedding-bg: #FCFAFB;
+    --color-wedding-card: #FFFFFF;
+    --color-wedding-pink-light: #FFF0F2;
+    --color-wedding-pink-medium: #FFCAD2;
+    --color-wedding-pink-dark: #FF3E5C;
+    --color-wedding-pink-hover: #E62E47;
+    --color-wedding-gold-light: #FFF4E6;
+    --color-wedding-gold-accent: #F7C566;
+    --color-wedding-gold-dark: #C9943B;
+    --color-wedding-charcoal-light: #231A1C;
+    --color-wedding-charcoal-dark: #0B0809;
+
+    --font-sans: 'Inter', sans-serif;
+    --font-serif: 'Rasa', serif;
+    --font-accent: 'KAP011', cursive;
+}
+
+/* Custom Scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #FCFAFB;
+}
+::-webkit-scrollbar-thumb {
+  background: #FFCAD2;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #FF3E5C;
+}
+
+body {
+  background-color: #FCFAFB;
+  color: #161112;
+  font-family: 'Inter', sans-serif;
+  overflow-x: hidden;
+}
+
+.font-kap011 {
+  font-family: 'KAP011', 'Playfair Display', serif;
+}
+
+/* Custom CSS Helpers for canvas guides */
+.canvas-grid-pattern {
+  background-size: 40px 40px;
+  background-image: 
+    linear-gradient(to right, rgba(0, 0, 0, 0.03) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(0, 0, 0, 0.03) 1px, transparent 1px);
+}
+
+.text-stroke-gold {
+  -webkit-text-stroke: 1px #D4AF37;
+}
