@@ -100,6 +100,9 @@
     <div id="templates-empty" class="hidden col-span-full py-16 text-center text-gray-400 font-semibold bg-wedding-card border rounded-3xl border-wedding-pink-medium/10 shadow-md">
         No invitation templates inside this category directory yet.
     </div>
+
+    {{-- Pagination Container --}}
+    <div id="pagination-container"></div>
 </div>
 
 {{-- ═══════════════════════════════════════════════════════════ --}}
@@ -278,6 +281,11 @@ let selectedFonts = [];
 let selectedLangs = [];
 let selectedPlanIds = ['monthly', 'yearly'];
 let isUploading = false;
+let currentPage = 1;
+let perPage = 12;
+let totalTemplates = 0;
+let totalPages = 1;
+let searchTimeout = null;
 
 const headers = {
     'Content-Type': 'application/json',
@@ -323,26 +331,44 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 async function fetchAllData() {
+    const loadingEl = document.getElementById('templates-loading');
+    
     try {
-        const catParam = selectedCatId ? `?categoryId=${selectedCatId}` : '';
+        const catParam = selectedCatId ? `categoryId=${selectedCatId}` : '';
+        const pageParam = `page=${currentPage}&perPage=${perPage}`;
+        const queryParams = [catParam, pageParam].filter(Boolean).join('&');
+        const url = `/api/templates${queryParams ? '?' + queryParams : ''}`;
+        
         const userId = window.CurrentUser ? window.CurrentUser.id : 'admin_super';
         const h = { 'x-user-id': userId };
 
         const [resTpl, resCat, resFont, resLang, resPlans] = await Promise.all([
-            fetch(`/api/templates${catParam}`, { headers: h }),
+            fetch(url, { headers: h }),
             fetch(`/api/categories`, { headers: h }),
             fetch(`/api/fonts`, { headers: h }),
             fetch(`/api/languages`, { headers: h }),
             fetch(`/api/subscriptions`, { headers: h })
         ]);
 
-        const tplData = await resTpl.json();
+        const tplResponse = await resTpl.json();
         const catData = await resCat.json();
         const fontData = await resFont.json();
         const langData = await resLang.json();
         const plansData = await resPlans.json();
 
-        allTemplates = Array.isArray(tplData) ? tplData : [];
+        // Handle paginated response
+        if (tplResponse.data && tplResponse.pagination) {
+            allTemplates = tplResponse.data;
+            totalTemplates = tplResponse.pagination.total;
+            totalPages = tplResponse.pagination.totalPages;
+            currentPage = tplResponse.pagination.page;
+        } else {
+            // Fallback for non-paginated response
+            allTemplates = Array.isArray(tplResponse) ? tplResponse : [];
+            totalTemplates = allTemplates.length;
+            totalPages = 1;
+        }
+        
         allCategories = Array.isArray(catData) ? catData : [];
         allFonts = Array.isArray(fontData) ? fontData.filter(f => f.isActive) : [];
         allLanguages = Array.isArray(langData) ? langData.filter(l => l.isActive) : [];
@@ -350,12 +376,14 @@ async function fetchAllData() {
 
         renderCategoryPills();
         renderTemplates();
+        renderPagination();
         populateModalSelectors();
     } catch (err) {
         console.error('Failed to load templates data:', err);
-        Toast.show('Failed to load templates.', 'error');
+        Toast.show('Failed to load templates: ' + err.message, 'error');
     } finally {
-        document.getElementById('templates-loading').classList.add('hidden');
+        // Always hide loading state
+        if (loadingEl) loadingEl.classList.add('hidden');
     }
 }
 
@@ -393,6 +421,7 @@ function scrollCategories(dir) {
 
 function selectCategory(catId) {
     selectedCatId = catId;
+    currentPage = 1; // Reset to first page when changing category
 
     // Update "All Invitations" pill
     document.getElementById('cat-all-btn').className = `px-5 py-2.5 rounded-xl text-xs font-bold transition-all duration-300 shrink-0 border ${
@@ -402,7 +431,7 @@ function selectCategory(catId) {
     }`;
 
     renderCategoryPills();
-    renderTemplates();
+    fetchAllData();
 }
 
 // ═══ RENDER TEMPLATES ════════════════════════════════════════
@@ -421,26 +450,34 @@ function getImageUrl(path) {
 }
 
 function filterTemplates() {
-    const q = document.getElementById('search-input').value.trim().toLowerCase();
-    document.getElementById('search-clear-btn').classList.toggle('hidden', !q);
-
-    const filtered = allTemplates.filter(tpl => {
-        if (selectedCatId && tpl.categoryId !== selectedCatId) return false;
-        if (!q) return true;
-        return tpl.name.toLowerCase().includes(q) || tpl.slug.toLowerCase().includes(q);
-    });
-
-    const resultsEl = document.getElementById('search-results-text');
-    if (q) {
-        resultsEl.classList.remove('hidden');
-        resultsEl.textContent = filtered.length === 0
-            ? 'No templates found'
-            : `${filtered.length} template${filtered.length !== 1 ? 's' : ''} found for "${q}"`;
-    } else {
-        resultsEl.classList.add('hidden');
+    // Clear previous timeout
+    if (searchTimeout) {
+        clearTimeout(searchTimeout);
     }
+    
+    // Debounce search to improve performance
+    searchTimeout = setTimeout(() => {
+        const q = document.getElementById('search-input').value.trim().toLowerCase();
+        document.getElementById('search-clear-btn').classList.toggle('hidden', !q);
 
-    renderTemplateCards(filtered);
+        const filtered = allTemplates.filter(tpl => {
+            if (selectedCatId && tpl.categoryId !== selectedCatId) return false;
+            if (!q) return true;
+            return tpl.name.toLowerCase().includes(q) || tpl.slug.toLowerCase().includes(q);
+        });
+
+        const resultsEl = document.getElementById('search-results-text');
+        if (q) {
+            resultsEl.classList.remove('hidden');
+            resultsEl.textContent = filtered.length === 0
+                ? 'No templates found'
+                : `${filtered.length} template${filtered.length !== 1 ? 's' : ''} found for "${q}"`;
+        } else {
+            resultsEl.classList.add('hidden');
+        }
+
+        renderTemplateCards(filtered);
+    }, 300); // 300ms debounce delay
 }
 
 function clearSearch() {
@@ -451,13 +488,66 @@ function clearSearch() {
 }
 
 function renderTemplates() {
-    const q = document.getElementById('search-input').value.trim().toLowerCase();
-    const filtered = allTemplates.filter(tpl => {
-        if (selectedCatId && tpl.categoryId !== selectedCatId) return false;
-        if (!q) return true;
-        return tpl.name.toLowerCase().includes(q) || tpl.slug.toLowerCase().includes(q);
-    });
-    renderTemplateCards(filtered);
+    renderTemplateCards(allTemplates);
+}
+
+// ═══ PAGINATION ═══════════════════════════════════════════════
+function renderPagination() {
+    const container = document.getElementById('pagination-container');
+    if (!container) return;
+    
+    if (totalPages <= 1) {
+        container.innerHTML = '';
+        return;
+    }
+    
+    let html = `
+        <div class="flex items-center justify-center gap-2 mt-8">
+            <button onclick="goToPage(${currentPage - 1})" 
+                ${currentPage === 1 ? 'disabled' : ''} 
+                class="px-4 py-2 rounded-xl bg-wedding-card border border-wedding-pink-medium/20 text-wedding-charcoal-dark text-xs font-bold hover:bg-wedding-pink-light/50 disabled:opacity-50 disabled:cursor-not-allowed transition-all">
+                <i data-lucide="chevron-left" class="w-4 h-4"></i>
+            </button>
+    `;
+    
+    for (let i = 1; i <= totalPages; i++) {
+        if (i === 1 || i === totalPages || (i >= currentPage - 1 && i <= currentPage + 1)) {
+            html += `
+                <button onclick="goToPage(${i})" 
+                    class="px-4 py-2 rounded-xl text-xs font-bold transition-all ${
+                        i === currentPage 
+                            ? 'bg-wedding-pink-dark text-white border-transparent shadow-md' 
+                            : 'bg-wedding-card border border-wedding-pink-medium/20 text-wedding-charcoal-dark hover:bg-wedding-pink-light/50'
+                    }">
+                    ${i}
+                </button>
+            `;
+        } else if (i === currentPage - 2 || i === currentPage + 2) {
+            html += `<span class="text-wedding-charcoal-light/50 text-xs font-bold">...</span>`;
+        }
+    }
+    
+    html += `
+            <button onclick="goToPage(${currentPage + 1})" 
+                ${currentPage === totalPages ? 'disabled' : ''} 
+                class="px-4 py-2 rounded-xl bg-wedding-card border border-wedding-pink-medium/20 text-wedding-charcoal-dark text-xs font-bold hover:bg-wedding-pink-light/50 disabled:opacity-50 disabled:cursor-not-allowed transition-all">
+                <i data-lucide="chevron-right" class="w-4 h-4"></i>
+            </button>
+        </div>
+        <p class="text-center text-xs text-wedding-charcoal-light/60 mt-2">
+            Showing ${(currentPage - 1) * perPage + 1}-${Math.min(currentPage * perPage, totalTemplates)} of ${totalTemplates} templates
+        </p>
+    `;
+    
+    container.innerHTML = html;
+    lucide.createIcons({ nodeList: [container] });
+}
+
+function goToPage(page) {
+    if (page < 1 || page > totalPages || page === currentPage) return;
+    currentPage = page;
+    document.getElementById('templates-loading').classList.remove('hidden');
+    fetchAllData();
 }
 
 function renderTemplateCards(templates) {
@@ -558,7 +648,7 @@ function renderTemplateCards(templates) {
         card.innerHTML = `
             <div class="aspect-[2/3] w-full bg-gray-50 border-b border-wedding-pink-medium/20 relative overflow-hidden flex items-center justify-center">
                 ${thumbUrl
-                    ? `<img src="${escapeHtml(thumbUrl)}" alt="${escapeHtml(tpl.name)}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">`
+                    ? `<img src="${escapeHtml(thumbUrl)}" alt="${escapeHtml(tpl.name)}" loading="lazy" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">`
                     : `<div class="w-full h-full flex items-center justify-center bg-wedding-pink-light/20 text-wedding-pink-dark text-xs font-bold">No Image</div>`
                 }
                 <div class="absolute left-3 top-3 flex flex-wrap gap-1 max-w-[calc(100%-24px)]">
@@ -585,7 +675,12 @@ function renderTemplateCards(templates) {
         grid.appendChild(card);
     });
 
-    lucide.createIcons({ nodeList: [grid] });
+    // Only create icons for new cards to improve performance
+    lucide.createIcons({ 
+        attr: 'data-lucide',
+        name: 'lucide',
+        nodes: Array.from(grid.querySelectorAll('[data-lucide]')) 
+    });
 }
 
 // ═══ OPEN EDITOR ═════════════════════════════════════════════

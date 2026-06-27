@@ -18,11 +18,34 @@ class TemplateApiController extends Controller
     /**
      * GET /api/templates
      */
-    public function index()
+    public function index(Request $request)
     {
         try {
-            $list = $this->db->getAll('templates');
-            return response()->json($list);
+            $page = max(1, (int) $request->get('page', 1));
+            $perPage = max(1, (int) $request->get('perPage', 12));
+            
+            // Use database-level pagination for better performance
+            $list = $this->db->getPaginated('templates', $page, $perPage);
+            $total = $this->db->getCount('templates');
+            
+            // Filter by categoryId if provided (client-side filter for now)
+            if ($request->has('categoryId') && !empty($request->categoryId)) {
+                $allTemplates = $this->db->getAll('templates');
+                $filtered = array_filter($allTemplates, fn($tpl) => $tpl['categoryId'] === $request->categoryId);
+                $total = count($filtered);
+                $offset = ($page - 1) * $perPage;
+                $list = array_slice(array_values($filtered), $offset, $perPage);
+            }
+            
+            return response()->json([
+                'data' => $list,
+                'pagination' => [
+                    'total' => $total,
+                    'page' => $page,
+                    'perPage' => $perPage,
+                    'totalPages' => ceil($total / $perPage),
+                ]
+            ]);
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
         }

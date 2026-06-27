@@ -38,6 +38,27 @@ class DbService
     }
 
     /**
+     * Get paginated records from a table (more efficient for large datasets).
+     */
+    public function getPaginated(string $table, int $page = 1, int $perPage = 12): array
+    {
+        $offset = ($page - 1) * $perPage;
+        $rows = DB::table($table)
+            ->offset($offset)
+            ->limit($perPage)
+            ->get();
+        return $rows->map(fn($row) => $this->decode($row))->toArray();
+    }
+
+    /**
+     * Get total count of records in a table.
+     */
+    public function getCount(string $table): int
+    {
+        return DB::table($table)->count();
+    }
+
+    /**
      * Get a single record by ID (no cache — fast primary key lookup).
      */
     public function getOne(string $table, string $id): ?array
