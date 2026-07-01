@@ -40,47 +40,16 @@ class AuthController extends Controller
         $email    = strtolower(trim($request->email));
         $password = $request->password;
 
-        // Special built-in super admin fallback from .env
-        $envAdminEmail = strtolower(trim(env('ADMIN_EMAIL', 'superadmin@amantran.com')));
-        $envAdminPass  = env('ADMIN_PASSWORD', 'AmantranAdmin_2026_Secure!');
-
         $user = null;
 
-        if ($email === $envAdminEmail) {
-            // Fetch super admin record from DB if it exists
-            $user = $this->db->getOne('users', 'admin_super');
-            
-            // If it doesn't exist, we can use a mock array matching the seeder
-            if (!$user) {
-                if ($password === $envAdminPass) {
-                    $user = [
-                        'id'          => 'admin_super',
-                        'email'       => $envAdminEmail,
-                        'name'        => 'Super Admin',
-                        'displayName' => 'Super Admin',
-                        'roleId'      => 'super_admin',
-                        'role'        => 'super_admin',
-                        'isBlocked'   => false,
-                        'status'      => 'active',
-                        'permissions' => ['*'],
-                    ];
+        // Find admin user by email in 'users' table
+        $users = $this->db->getAll('users');
+        foreach ($users as $u) {
+            if (isset($u['email']) && strtolower(trim($u['email'])) === $email) {
+                if (HashHelper::check($password, $u['password'] ?? '')) {
+                    $user = $u;
                 }
-            } else {
-                // Verify password against DB hash
-                if (!HashHelper::check($password, $user['password'] ?? '')) {
-                    $user = null;
-                }
-            }
-        } else {
-            // Find regular admin user by email in 'users' table
-            $users = $this->db->getAll('users');
-            foreach ($users as $u) {
-                if (isset($u['email']) && strtolower(trim($u['email'])) === $email) {
-                    if (HashHelper::check($password, $u['password'] ?? '')) {
-                        $user = $u;
-                    }
-                    break;
-                }
+                break;
             }
         }
 

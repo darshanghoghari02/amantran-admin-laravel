@@ -483,7 +483,7 @@
                     const time = tx.timestamp ? new Date(tx.timestamp).toLocaleString('en-GB', { hour: '2-digit', minute: '2-digit', day: '2-digit', month: '2-digit' }) : '-';
                     txHTML += `
                         <tr class="border-b border-wedding-pink-medium/15 hover:bg-wedding-pink-light/10">
-                            <td class="py-3 px-2 font-mono text-[11px]">${tx.id.substring(0, 8)}...</td>
+                            <td class="py-3 px-2 font-mono text-[11px]">${String(tx.id || '').substring(0, 8)}...</td>
                             <td class="py-3 px-2 truncate max-w-[120px]">${tx.userEmail ?? 'anonymous'}</td>
                             <td class="py-3 px-2 capitalize">${tx.type === 'subscription' ? 'Subscription' : 'Card Buy'}</td>
                             <td class="py-3 px-2 font-extrabold text-wedding-pink-dark">₹${tx.amount}</td>
@@ -498,10 +498,17 @@
             }
 
             // Refresh icons on updated HTML content
-            lucide.createIcons();
+            if (typeof lucide !== 'undefined') {
+                lucide.createIcons();
+            }
 
         } catch (e) {
             console.error('Failed to load dashboard statistics:', e);
+            // Hide loading indicator even on failure so user doesn't get stuck on spinner
+            try {
+                document.getElementById('dashboard-loading').classList.add('hidden');
+                document.getElementById(`panel-${currentTab}`).classList.remove('hidden');
+            } catch (err) {}
         }
     }
 

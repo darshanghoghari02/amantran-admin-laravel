@@ -121,6 +121,8 @@ class DbService
 
         Cache::forget("db_table_{$table}");
 
+        $this->broadcastSSE($table, 'add', $id);
+
         return $record;
     }
 
@@ -145,6 +147,8 @@ class DbService
 
         Cache::forget("db_table_{$table}");
 
+        $this->broadcastSSE($table, 'update', $id);
+
         return array_merge(['id' => $id], $merged);
     }
 
@@ -156,6 +160,7 @@ class DbService
         $result = DB::table($table)->where('id', $id)->delete() > 0;
         if ($result) {
             Cache::forget("db_table_{$table}");
+            $this->broadcastSSE($table, 'delete', $id);
         }
         return $result;
     }
@@ -192,5 +197,36 @@ class DbService
     private function generateId(string $table): string
     {
         return (string) Str::uuid();
+    }
+
+    /**
+     * Broadcast Server-Sent Event (SSE) for realtime updates.
+     */
+    private function broadcastSSE(string $table, string $action, string $id): void
+    {
+        try {
+            $allowedCollections = ['categories', 'languages', 'templates'];
+            if (!in_array($table, $allowedCollections)) {
+                return;
+            }
+
+            $now = microtime(true);
+            $events = Cache::get('sse_events', []);
+            
+            // Keep only events from the last 60 seconds
+            $events = array_filter($events, fn($e) => $now - $e['timestamp'] < 60);
+
+            $events[] = [
+                'type'       => 'refresh',
+                'collection' => $table,
+                'action'     => $action,
+                'id'         => $id,
+                'timestamp'  => $now
+            ];
+
+            Cache::put('sse_events', $events, 120);
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error("SSE Broadcast failed: " . $e->getMessage());
+        }
     }
 }

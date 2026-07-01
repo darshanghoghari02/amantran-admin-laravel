@@ -48,7 +48,7 @@ Route::prefix('app')->group(function () {
     // Public Catalog
     Route::get('/categories', [CategoryApiController::class, 'index']);
     Route::get('/languages', [LanguageApiController::class, 'index']);
-    Route::get('/templates', [TemplateApiController::class, 'index']);
+    Route::get('/templates', [TemplateApiController::class, 'appIndex']);
     Route::get('/templates/{id}', [TemplateApiController::class, 'show']);
     Route::get('/fonts', [FontApiController::class, 'index']);
     Route::get('/subscriptions', [SubscriptionApiController::class, 'index']);

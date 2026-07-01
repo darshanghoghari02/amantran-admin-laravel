@@ -31,42 +31,15 @@ class UserApiController extends Controller
             $email    = strtolower(trim($request->email));
             $password = $request->password;
 
-            // Check dynamic super admin from env
-            $envAdminEmail = strtolower(trim(env('ADMIN_EMAIL', 'superadmin@amantran.com')));
-            $envAdminPass  = env('ADMIN_PASSWORD', 'AmantranAdmin_2026_Secure!');
-
             $user = null;
 
-            if ($email === $envAdminEmail) {
-                $user = $this->db->getOne('users', 'admin_super');
-                if (!$user) {
-                    if ($password === $envAdminPass) {
-                        $user = [
-                            'id'          => 'admin_super',
-                            'email'       => $envAdminEmail,
-                            'name'        => 'Super Admin',
-                            'displayName' => 'Super Admin',
-                            'roleId'      => 'super_admin',
-                            'role'        => 'super_admin',
-                            'isBlocked'   => false,
-                            'status'      => 'active',
-                            'permissions' => ['*'],
-                        ];
+            $users = $this->db->getAll('users');
+            foreach ($users as $u) {
+                if (isset($u['email']) && strtolower(trim($u['email'])) === $email) {
+                    if (HashHelper::check($password, $u['password'] ?? '')) {
+                        $user = $u;
                     }
-                } else {
-                    if (!HashHelper::check($password, $user['password'] ?? '')) {
-                        $user = null;
-                    }
-                }
-            } else {
-                $users = $this->db->getAll('users');
-                foreach ($users as $u) {
-                    if (isset($u['email']) && strtolower(trim($u['email'])) === $email) {
-                        if (HashHelper::check($password, $u['password'] ?? '')) {
-                            $user = $u;
-                        }
-                        break;
-                    }
+                    break;
                 }
             }
 
@@ -306,6 +279,9 @@ class UserApiController extends Controller
 
             $ratings = [];
             $userSubscriptions = [];
+            $drafts = [];
+            $cards = [];
+
             try {
                 $ratings = $this->db->getAll('ratings');
             } catch (\Exception $err) {
@@ -315,6 +291,16 @@ class UserApiController extends Controller
                 $userSubscriptions = $this->db->getAll('user_subscriptions');
             } catch (\Exception $err) {
                 Log::warning('Error fetching user subscriptions: ' . $err->getMessage());
+            }
+            try {
+                $drafts = $this->db->getAll('user_drafts');
+            } catch (\Exception $err) {
+                Log::warning('Error fetching user drafts: ' . $err->getMessage());
+            }
+            try {
+                $cards = $this->db->getAll('user_cards');
+            } catch (\Exception $err) {
+                Log::warning('Error fetching user cards: ' . $err->getMessage());
             }
 
             $normalized = [];
@@ -346,6 +332,10 @@ class UserApiController extends Controller
                     'updatedAt'          => $userSub['updatedAt'] ?? null,
                 ] : null;
 
+                // Calculate drafts and cards count dynamically
+                $userDraftsCount = count(array_filter($drafts, fn($d) => ($d['userId'] ?? '') === $u['id']));
+                $userCardsCount = count(array_filter($cards, fn($c) => ($c['userId'] ?? '') === $u['id']));
+
                 $normalized[] = [
                     'id'              => $u['id'],
                     'displayName'     => $u['displayName'] ?? $u['name'] ?? 'Anonymous User',
@@ -356,8 +346,8 @@ class UserApiController extends Controller
                     'profilePhoto'    => $u['profilePhoto'] ?? '',
                     'accountStatus'   => $u['accountStatus'] ?? 'active',
                     'isBlocked'       => ($u['isBlocked'] ?? false) === true || ($u['accountStatus'] ?? '') === 'suspended',
-                    'invitationCount' => (int) ($u['invitationCount'] ?? 0),
-                    'draftsCount'     => (int) ($u['draftsCount'] ?? 0),
+                    'invitationCount' => $userCardsCount,
+                    'draftsCount'     => $userDraftsCount,
                     'createdAt'       => $u['createdAt'] ?? now()->toISOString(),
                     'lastLoginAt'     => $u['lastLoginAt'] ?? null,
                     'rating'          => $latestRating,

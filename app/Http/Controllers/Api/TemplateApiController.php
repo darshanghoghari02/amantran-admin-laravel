@@ -52,6 +52,24 @@ class TemplateApiController extends Controller
     }
 
     /**
+     * GET /api/app/templates (For Mobile Client App)
+     * Returns all active templates as a direct list (no pagination wrapping)
+     */
+    public function appIndex(Request $request)
+    {
+        try {
+            $list = $this->db->getAll('templates');
+            
+            // Only return active templates for the app
+            $activeList = array_values(array_filter($list, fn($tpl) => ($tpl['isActive'] ?? true) === true));
+            
+            return response()->json($activeList);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
+
+    /**
      * POST /api/templates
      */
     public function store(Request $request)
@@ -204,6 +222,46 @@ class TemplateApiController extends Controller
             $this->permissions->logAuditEvent($userId, "Deleted template: {$template['name']}", 'Templates');
 
             return response()->json(['success' => true]);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
+
+    /**
+     * POST /api/templates/{id}/duplicate
+     */
+    public function duplicate(Request $request, $id)
+    {
+        try {
+            $userId = $request->header('x-user-id') ?? session('admin_user.id') ?? 'system';
+            $original = $this->db->getOne('templates', $id);
+            if (!$original) {
+                return response()->json(['error' => 'Original template not found'], 404);
+            }
+
+            $clonedTemplate = $original;
+            
+            // Clean up identification and dates for the new template
+            unset($clonedTemplate['id']);
+            unset($clonedTemplate['createdAt']);
+            unset($clonedTemplate['updatedAt']);
+
+            // Modify name, slug, and status
+            $clonedTemplate['name'] = ($original['name'] ?? 'Template') . ' (Copy)';
+            
+            $baseSlug = $original['slug'] ?? 'template';
+            $clonedTemplate['slug'] = $baseSlug . '_copy_' . time();
+            $clonedTemplate['isActive'] = false; // duplicated templates are draft by default
+
+            $newTemplate = $this->db->add('templates', $clonedTemplate);
+
+            $this->permissions->logAuditEvent(
+                $userId, 
+                "Cloned template: " . ($original['name'] ?? 'Untitled') . " into " . $newTemplate['name'], 
+                'Templates'
+            );
+
+            return response()->json($newTemplate, 201);
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
         }

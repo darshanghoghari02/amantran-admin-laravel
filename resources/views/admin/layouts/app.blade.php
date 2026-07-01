@@ -14,8 +14,12 @@
     <!-- Lucide Icons CDN -->
     <script src="https://unpkg.com/lucide@latest"></script>
 
-    <!-- Tailwind & Vite Styles and Scripts -->
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <!-- Tailwind Styles and Scripts -->
+    @php
+        $pathPrefix = request()->getHost() === '127.0.0.1' || request()->getHost() === 'localhost' ? '' : '/public';
+    @endphp
+    <link rel="stylesheet" href="{{ $pathPrefix }}/css/app.css">
+    <script src="{{ $pathPrefix }}/js/app.js" defer></script>
     
     <!-- Additional Styles -->
     @stack('styles')

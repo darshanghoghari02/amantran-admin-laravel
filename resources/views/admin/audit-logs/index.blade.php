@@ -37,7 +37,7 @@
                 id="search-query"
                 oninput="handleFilterChange()"
                 placeholder="Search logs by administrator email, action statement, resource name..."
-                className="w-full pl-12 pr-4 py-2.5 sm:py-3 bg-[#FFF5F6]/30 border border-[#FFCAD2]/55 rounded-xl sm:rounded-2xl text-wedding-charcoal-dark placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-wedding-pink-dark/25 focus:bg-white text-xs sm:text-sm font-semibold transition-all"
+                class="w-full pl-12 pr-4 py-2.5 sm:py-3 bg-[#FFF5F6]/30 border border-[#FFCAD2]/55 rounded-xl sm:rounded-2xl text-wedding-charcoal-dark placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-wedding-pink-dark/25 focus:bg-white text-xs sm:text-sm font-semibold transition-all"
             />
         </div>
 
@@ -47,7 +47,7 @@
             <select
                 id="resource-filter"
                 onchange="handleFilterChange()"
-                className="w-full pl-11 pr-8 py-2.5 sm:py-3 bg-[#FFF5F6]/30 border border-[#FFCAD2]/55 rounded-xl sm:rounded-2xl text-wedding-charcoal-dark focus:outline-none focus:ring-2 focus:ring-wedding-pink-dark/25 focus:bg-white text-xs sm:text-sm font-semibold transition-all appearance-none cursor-pointer"
+                class="w-full pl-11 pr-8 py-2.5 sm:py-3 bg-[#FFF5F6]/30 border border-[#FFCAD2]/55 rounded-xl sm:rounded-2xl text-wedding-charcoal-dark focus:outline-none focus:ring-2 focus:ring-wedding-pink-dark/25 focus:bg-white text-xs sm:text-sm font-semibold transition-all appearance-none cursor-pointer"
             >
                 <option value="all">All Modules</option>
             </select>

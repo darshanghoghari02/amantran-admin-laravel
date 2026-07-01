@@ -1019,7 +1019,7 @@ async function handleFormSubmit(e) {
         if (bgFiles && bgFiles.length > 0) {
             submitBtn.textContent = 'Uploading backgrounds...';
             const bgData = new FormData();
-            for (let i = 0; i < bgFiles.length; i++) bgData.append('files', bgFiles[i]);
+            for (let i = 0; i < bgFiles.length; i++) bgData.append('files[]', bgFiles[i]);
             const resBg = await fetch(`/api/uploads/multiple?type=template&categorySlug=${catSlug}&templateSlug=${slug}`, {
                 method: 'POST',
                 headers: { 'x-user-id': userId },

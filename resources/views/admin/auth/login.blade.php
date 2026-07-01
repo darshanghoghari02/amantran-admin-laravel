@@ -13,7 +13,11 @@
     <!-- Lucide CDN -->
     <script src="https://unpkg.com/lucide@latest"></script>
 
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @php
+        $pathPrefix = request()->getHost() === '127.0.0.1' || request()->getHost() === 'localhost' ? '' : '/public';
+    @endphp
+    <link rel="stylesheet" href="{{ $pathPrefix }}/css/app.css">
+    <script src="{{ $pathPrefix }}/js/app.js" defer></script>
 </head>
 <body class="min-h-screen bg-[#FFF0F2] flex items-center justify-center p-4 relative overflow-hidden font-sans antialiased">
     
@@ -102,7 +106,7 @@
                     <input
                         type="email"
                         name="email"
-                        value="{{ old('email', 'superadmin@amantran.com') }}"
+                        value="{{ old('email') }}"
                         placeholder="admin@gmail.com"
                         class="w-full pl-12 pr-4 py-3 bg-[#FFF5F6] border border-[#FFCAD2] rounded-2xl text-wedding-charcoal-dark placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-wedding-pink-dark/30 focus:bg-white text-sm font-semibold transition-all"
                         required

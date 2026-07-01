@@ -146,14 +146,14 @@
                         id="subscriber-search"
                         oninput="filterSubscribers()"
                         placeholder="Search subscribers by name, email, or phone..."
-                        className="w-full pl-11 pr-4 py-3 bg-[#FFF5F6]/30 border border-[#FFCAD2]/55 rounded-2xl text-wedding-charcoal-dark placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-wedding-pink-dark/25 focus:bg-white text-sm font-semibold transition-all"
+                        class="w-full pl-11 pr-4 py-3 bg-[#FFF5F6]/30 border border-[#FFCAD2]/55 rounded-2xl text-wedding-charcoal-dark placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-wedding-pink-dark/25 focus:bg-white text-sm font-semibold transition-all"
                     />
                 </div>
                 <div class="flex gap-4 items-center">
                     <select
                         id="subscriber-status-filter"
                         onchange="filterSubscribers()"
-                        className="px-4 py-3 bg-gray-50 border border-wedding-pink-medium/20 rounded-2xl text-wedding-charcoal-dark focus:outline-none focus:ring-2 focus:ring-wedding-pink-dark/20 text-sm font-semibold cursor-pointer"
+                        class="px-4 py-3 bg-gray-50 border border-wedding-pink-medium/20 rounded-2xl text-wedding-charcoal-dark focus:outline-none focus:ring-2 focus:ring-wedding-pink-dark/20 text-sm font-semibold cursor-pointer"
                     >
                         <option value="">All Statuses</option>
                         <option value="active">Active Plan</option>

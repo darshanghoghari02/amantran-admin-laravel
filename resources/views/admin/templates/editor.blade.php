@@ -14,7 +14,11 @@
     <script src="https://unpkg.com/lucide@latest"></script>
 
     {{-- Vite assets --}}
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @php
+        $pathPrefix = request()->getHost() === '127.0.0.1' || request()->getHost() === 'localhost' ? '' : '/public';
+    @endphp
+    <link rel="stylesheet" href="{{ $pathPrefix }}/css/app.css">
+    <script src="{{ $pathPrefix }}/js/app.js" defer></script>
 
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -950,9 +954,9 @@
             <div style="display:flex;align-items:center;gap:6px;">
                 <span style="width:6px;height:6px;border-radius:50%;background:#FF3E5C;flex-shrink:0;"></span>
                 <h3 id="editor-tpl-name" style="font-size:12px;font-weight:800;color:#FFF4E6;text-transform:uppercase;letter-spacing:0.06em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"></h3>
-                <span class="premium-badge"><i data-lucide="crown" style="width:11px;height:11px;"></i> Premium</span>
+                <span id="editor-tpl-premium-badge" class="premium-badge" style="display: none;"><i data-lucide="crown" style="width:11px;height:11px;"></i> Premium</span>
             </div>
-            <p id="editor-tpl-slug" style="font-size:9px;color:#4A3539;font-family:monospace;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"></p>
+            <p id="editor-tpl-slug" style="font-size:9px;color:#9E878A;font-family:monospace;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"></p>
         </div>
     </div>
 
@@ -1011,7 +1015,7 @@
 {{-- Auto-translate notification --}}
 <div id="translate-toast" class="flex">
     <i data-lucide="languages" class="w-4 h-4 text-[#FFF4E6] mr-2"></i>
-    <span>Ã¢Å“Â¨ Translating card elements to <span id="translate-lang" class="text-[#FFF4E6]">English</span>...</span>
+    <span>✨ Translating card elements to <span id="translate-lang" class="text-[#FFF4E6]">English</span>...</span>
 </div>
 
 {{-- Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ MAIN 3-PANEL LAYOUT Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ --}}
@@ -1506,9 +1510,7 @@ window.CurrentUser = @json(session('admin_user') ?? null);
 
 {{-- Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ Editor JavaScript Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ --}}
 <script>
-// Ã¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢Â
-// EDITOR STATE
-// Ã¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢Â
+
 const LOGICAL_W = 1080;
 const LOGICAL_H = 1920;
 
@@ -1547,9 +1549,7 @@ const stickers = [
     '/assets/images/stickers/ganesh4.png'
 ];
 
-// Ã¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢Â
-// INIT
-// Ã¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢Â
+
 document.addEventListener('DOMContentLoaded', async () => {
     lucide.createIcons();
     renderPremiumPresets();
@@ -1605,6 +1605,13 @@ async function loadTemplate(id) {
         document.getElementById('editor-tpl-name').title = data.name || '';
         document.getElementById('editor-tpl-slug').textContent = data.slug || '';
         document.getElementById('editor-tpl-slug').title = data.slug || '';
+
+        // Show/hide premium badge dynamically
+        const badge = document.getElementById('editor-tpl-premium-badge');
+        if (badge) {
+            badge.style.display = (data.isPremium === true || data.isPremium === 1 || data.isPremium === 'true') ? 'inline-flex' : 'none';
+        }
+
         document.getElementById('info-name').textContent = data.name || '-';
         document.getElementById('info-slug').textContent = data.slug || '-';
         document.getElementById('info-fonts').textContent = (data.fonts || []).join(', ') || '-';
@@ -1855,7 +1862,7 @@ function createElementDOM(elem, scale) {
         img.draggable = false;
         img.style.cssText = 'width: 100%; height: 100%; object-fit: contain; pointer-events: none; user-select: none; display: block;';
         img.onerror = () => {
-            img.src = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100'><rect width='100' height='100' fill='%23FFD1D7'/><text x='50' y='55' font-size='24' text-anchor='middle'>Ã°Å¸Å’Âº</text></svg>";
+            img.src = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100'><rect width='100' height='100' fill='%23FFD1D7'/><text x='50' y='55' font-size='24' text-anchor='middle'>🌺</text></svg>";
         };
         container.appendChild(img);
     }
@@ -2039,20 +2046,79 @@ function startResize(e, elem, pos, actualHeight) {
     const startX = e.clientX, startY = e.clientY;
     const initX = elem.x, initY = elem.y;
     const initW = elem.width, initH = actualHeight;
+    const initFontSize = getStyleVal(elem, 'fontSize', 36);
 
     pushHistory();
+
+    const isCorner = pos === 'nw' || pos === 'ne' || pos === 'sw' || pos === 'se';
+    const isText = elem.type === 'text';
 
     const onMove = (mv) => {
         const dx = (mv.clientX - startX) / scale;
         const dy = (mv.clientY - startY) / scale;
         let x = initX, y = initY, w = initW, h = initH;
 
-        if (pos.includes('e')) w = Math.max(40, initW + dx);
-        if (pos.includes('s')) h = Math.max(20, initH + dy);
-        if (pos.includes('w')) { x = initX + dx; w = Math.max(40, initW - dx); }
-        if (pos.includes('n')) { y = initY + dy; h = Math.max(20, initH - dy); }
+        if (isText && isCorner) {
+            // Proportional resizing for text elements based purely on horizontal movement (dx)
+            // This avoids axis switching which causes violent jumping/glitching
+            let scaleFactor = 1;
+            if (pos.includes('e')) {
+                scaleFactor = (initW + dx) / initW;
+            } else if (pos.includes('w')) {
+                scaleFactor = (initW - dx) / initW;
+            }
+            
+            // Limit minimum scale
+            scaleFactor = Math.max(0.15, scaleFactor);
+            w = initW * scaleFactor;
+            h = initH * scaleFactor;
 
-        updateElement(elem.id, { x: Math.round(x), y: Math.round(y), width: Math.max(40, Math.round(w)), height: Math.max(20, Math.round(h)) }, true);
+            // Adjust coordinates based on fixed anchor points
+            if (pos.includes('w')) {
+                x = (initX + initW) - w;
+            }
+            if (pos.includes('n')) {
+                y = (initY + initH) - h;
+            }
+
+            // Calculate new font size
+            const newFontSize = Math.max(8, Math.round(initFontSize * scaleFactor));
+            
+            // Build style update for the current language
+            const lang = editorState.selectedLanguage;
+            const langStyles = {
+                ...(elem.languageStyles || {}),
+                [lang]: {
+                    ...((elem.languageStyles || {})[lang] || {}),
+                    fontSize: newFontSize
+                }
+            };
+            const updates = { 
+                x: Math.round(x), 
+                y: Math.round(y), 
+                width: Math.max(40, Math.round(w)), 
+                height: Math.max(20, Math.round(h)),
+                languageStyles: langStyles
+            };
+            if (lang === 'English') {
+                updates.fontSize = newFontSize;
+            }
+
+            updateElement(elem.id, updates, true);
+        } else {
+            // Standard non-proportional resizing
+            if (pos.includes('e')) w = Math.max(40, initW + dx);
+            if (pos.includes('s')) h = Math.max(20, initH + dy);
+            if (pos.includes('w')) { x = initX + dx; w = Math.max(40, initW - dx); }
+            if (pos.includes('n')) { y = initY + dy; h = Math.max(20, initH - dy); }
+
+            updateElement(elem.id, { 
+                x: Math.round(x), 
+                y: Math.round(y), 
+                width: Math.max(40, Math.round(w)), 
+                height: Math.max(20, Math.round(h)) 
+            }, true);
+        }
     };
 
     const onUp = () => {
@@ -2643,9 +2709,9 @@ async function addCustomText() {
     document.getElementById('custom-text-input').value = '';
 }
 
-// Ã¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢Â
+// -----------------------------------------------------------------------------------------------------------------------
 // STICKERS & PHOTOS
-// Ã¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢Â
+// -----------------------------------------------------------------------------------------------------------------------
 function renderStickersGrid() {
     const grid = document.getElementById('stickers-grid');
     grid.innerHTML = '';
@@ -2659,7 +2725,7 @@ function renderStickersGrid() {
         img.src = getImageUrl(st);
         img.alt = 'Sticker';
         img.className = 'w-16 h-16 object-contain group-hover:scale-110 transition-transform duration-300';
-        img.onerror = () => { img.src = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100'><rect width='100' height='100' fill='%23FFD1D7'/><text x='50' y='55' font-size='24' text-anchor='middle'>Ã°Å¸Å’Âº</text></svg>"; };
+        img.onerror = () => { img.src = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100'><rect width='100' height='100' fill='%23FFD1D7'/><text x='50' y='55' font-size='24' text-anchor='middle'>🌺</text></svg>"; };
         btn.appendChild(img);
         grid.appendChild(btn);
     });

@@ -23,6 +23,7 @@ class AnalyticsApiController extends Controller
             $categories   = $this->db->getAll('categories');
             $users        = $this->db->getAll('app_users');
             $drafts       = $this->db->getAll('user_drafts');
+            $cards        = $this->db->getAll('user_cards');
             $transactions = $this->db->getAll('transactions');
 
             $totalTemplates  = count($templates);
@@ -32,11 +33,7 @@ class AnalyticsApiController extends Controller
             $premiumTemplates = count(array_filter($templates, fn($t) => !empty($t['isPremium'])));
             $activeUsersCount = count(array_filter($users, fn($u) => empty($u['isBlocked']) && ($u['accountStatus'] ?? '') !== 'suspended'));
             $totalDrafts      = count($drafts);
-
-            $totalInvitations = 0;
-            foreach ($users as $u) {
-                $totalInvitations += (int) ($u['invitationCount'] ?? 0);
-            }
+            $totalInvitations = count($cards);
 
             // Recent activities accumulator
             $activities = [];
@@ -80,14 +77,59 @@ class AnalyticsApiController extends Controller
                 }
             }
 
+            // Build template name lookup map
+            $templateNameMap = [];
+            foreach ($templates as $t) {
+                if (!empty($t['id'])) {
+                    $templateNameMap[$t['id']] = $t['name'] ?? 'Untitled';
+                }
+            }
+
+            // Build app user name map
+            $appUserMap = [];
+            foreach ($users as $u) {
+                if (!empty($u['id'])) {
+                    $appUserMap[$u['id']] = $u['displayName'] ?? $u['name'] ?? $u['email'] ?? $u['phone'] ?? null;
+                }
+            }
+
             // Add drafts
             foreach ($drafts as $d) {
                 $timeVal = $d['savedAt'] ?? $d['createdAt'] ?? $d['updatedAt'] ?? null;
                 if ($timeVal && !empty($d['userId'])) {
+                    $tid = $d['templateId'] ?? '';
+                    $tname = $d['templateName'] ?? '';
+                    if (empty($tname)) {
+                        $tname = $templateNameMap[$tid] ?? 'Template';
+                    }
+                    
+                    $resolvedUser = $appUserMap[$d['userId']] ?? ('User ID: ' . substr($d['userId'], 0, 6) . '...');
+
                     $activities[] = [
                         'id'        => 'drf_' . $d['id'],
-                        'user'      => 'User ID: ' . substr($d['userId'], 0, 6) . '...',
-                        'action'    => 'Created draft invitation for "' . ($d['templateName'] ?? 'Template') . '"',
+                        'user'      => $resolvedUser,
+                        'action'    => 'Created draft invitation for "' . $tname . '"',
+                        'timestamp' => Carbon::parse($timeVal),
+                    ];
+                }
+            }
+
+            // Add completed cards (downloads)
+            foreach ($cards as $c) {
+                $timeVal = $c['savedAt'] ?? $c['createdAt'] ?? $c['updatedAt'] ?? null;
+                if ($timeVal && !empty($c['userId'])) {
+                    $tid = $c['templateId'] ?? '';
+                    $tname = $c['templateName'] ?? '';
+                    if (empty($tname)) {
+                        $tname = $templateNameMap[$tid] ?? 'Template';
+                    }
+
+                    $resolvedUser = $appUserMap[$c['userId']] ?? ('User ID: ' . substr($c['userId'], 0, 6) . '...');
+
+                    $activities[] = [
+                        'id'        => 'crd_' . $c['id'],
+                        'user'      => $resolvedUser,
+                        'action'    => 'Finalized/Downloaded invitation for "' . $tname . '"',
                         'timestamp' => Carbon::parse($timeVal),
                     ];
                 }
@@ -102,16 +144,17 @@ class AnalyticsApiController extends Controller
             $recentActivities = [];
             $now = Carbon::now();
             foreach (array_slice($activities, 0, 5) as $act) {
-                $diffMins = $now->diffInMinutes($act['timestamp']);
-                $diffHours = $now->diffInHours($act['timestamp']);
-                $diffDays = $now->diffInDays($act['timestamp']);
-
+                $diffSeconds = $now->timestamp - $act['timestamp']->timestamp;
                 $timeStr = 'Just now';
-                if ($diffDays > 0) {
+
+                if ($diffSeconds >= 86400) {
+                    $diffDays = floor($diffSeconds / 86400);
                     $timeStr = $diffDays . ' day' . ($diffDays > 1 ? 's' : '') . ' ago';
-                } elseif ($diffHours > 0) {
+                } elseif ($diffSeconds >= 3600) {
+                    $diffHours = floor($diffSeconds / 3600);
                     $timeStr = $diffHours . ' hour' . ($diffHours > 1 ? 's' : '') . ' ago';
-                } elseif ($diffMins > 0) {
+                } elseif ($diffSeconds >= 60) {
+                    $diffMins = floor($diffSeconds / 60);
                     $timeStr = $diffMins . ' min' . ($diffMins > 1 ? 's' : '') . ' ago';
                 }
 
@@ -123,11 +166,11 @@ class AnalyticsApiController extends Controller
                 ];
             }
 
-            // Popular templates
+            // Popular templates calculated from cards (completed templates / downloads)
             $templateCounts = [];
-            foreach ($drafts as $d) {
-                if (!empty($d['templateId'])) {
-                    $tid = $d['templateId'];
+            foreach ($cards as $c) {
+                if (!empty($c['templateId'])) {
+                    $tid = $c['templateId'];
                     $templateCounts[$tid] = ($templateCounts[$tid] ?? 0) + 1;
                 }
             }

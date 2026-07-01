@@ -20,8 +20,8 @@ class TranslateApiController extends Controller
             ]);
 
             $text       = $request->text;
-            $sourceCode = $request->sourceCode ?? 'auto';
-            $targetCode = $request->targetCode ?? 'en';
+            $sourceCode = $request->sourceCode ?? $request->sourceLang ?? 'auto';
+            $targetCode = $request->targetCode ?? $request->targetLang ?? 'en';
 
             // Resolve target language code if name is passed
             $targetLangCode = $this->resolveLanguageCode($targetCode);
@@ -29,7 +29,7 @@ class TranslateApiController extends Controller
 
             $url = "https://translate.googleapis.com/translate_a/single";
             
-            $response = Http::get($url, [
+            $response = Http::withoutVerifying()->get($url, [
                 'client' => 'gtx',
                 'sl'     => $sourceLangCode,
                 'tl'     => $targetLangCode,

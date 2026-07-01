@@ -85,7 +85,8 @@ class WhatsAppService
         }
 
         $response = Http::withToken($this->accessToken)
-            ->timeout(10)
+            ->timeout(5)
+            ->withoutVerifying()
             ->post($url, $payload);
 
         if ($response->failed()) {

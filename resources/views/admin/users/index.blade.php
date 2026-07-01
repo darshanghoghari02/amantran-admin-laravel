@@ -54,7 +54,7 @@
                 id="user-search"
                 oninput="filterUsers()"
                 placeholder="Search by name or email address..."
-                className="w-full pl-11 pr-4 py-3 bg-[#FFF5F6]/30 border border-[#FFCAD2]/55 rounded-2xl text-wedding-charcoal-dark placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-wedding-pink-dark/25 focus:bg-white text-sm font-semibold transition-all"
+                class="w-full pl-11 pr-4 py-3 bg-[#FFF5F6]/30 border border-[#FFCAD2]/55 rounded-2xl text-wedding-charcoal-dark placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-wedding-pink-dark/25 focus:bg-white text-sm font-semibold transition-all"
             />
         </div>
 
@@ -62,7 +62,7 @@
             <select
                 id="role-filter"
                 onchange="filterUsers()"
-                className="w-full sm:w-48 px-4 py-3 bg-[#FFF5F6]/30 border border-[#FFCAD2]/55 rounded-2xl text-wedding-charcoal-dark focus:outline-none focus:ring-2 focus:ring-wedding-pink-dark/25 text-sm font-semibold transition-all appearance-none pr-8 cursor-pointer"
+                class="w-full sm:w-48 px-4 py-3 bg-[#FFF5F6]/30 border border-[#FFCAD2]/55 rounded-2xl text-wedding-charcoal-dark focus:outline-none focus:ring-2 focus:ring-wedding-pink-dark/25 text-sm font-semibold transition-all appearance-none pr-8 cursor-pointer"
             >
                 <option value="">All Roles</option>
             </select>
@@ -248,6 +248,33 @@
                         </button>
                     </div>
                 </form>
+
+                <!-- User Saved Designs & Drafts -->
+                <div class="space-y-4 pt-4 border-t border-wedding-pink-medium/15">
+                    <h4 class="text-xs font-black text-wedding-charcoal-dark uppercase tracking-wider flex items-center gap-1.5 font-sans">
+                        <i data-lucide="folder-open" class="w-4 h-4 text-wedding-pink-dark"></i> User Saved Designs & Drafts
+                    </h4>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <!-- Drafts List -->
+                        <div class="space-y-1.5">
+                            <label class="text-[10px] font-black text-wedding-charcoal-light uppercase tracking-wider flex items-center gap-1">
+                                <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span> Drafts (<span id="modal-drafts-count">0</span>)
+                            </label>
+                            <div id="modal-drafts-list" class="space-y-1.5 max-h-[140px] overflow-y-auto bg-gray-50 border border-wedding-pink-medium/10 p-2.5 rounded-2xl">
+                                <!-- Loaded dynamically -->
+                            </div>
+                        </div>
+                        <!-- Completed List -->
+                        <div class="space-y-1.5">
+                            <label class="text-[10px] font-black text-wedding-charcoal-light uppercase tracking-wider flex items-center gap-1">
+                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Downloaded/Finalized (<span id="modal-cards-count">0</span>)
+                            </label>
+                            <div id="modal-cards-list" class="space-y-1.5 max-h-[140px] overflow-y-auto bg-gray-50 border border-wedding-pink-medium/10 p-2.5 rounded-2xl">
+                                <!-- Loaded dynamically -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
                 <!-- Ratings Feedback History -->
                 <div class="space-y-4 pt-4 border-t border-wedding-pink-medium/15">
@@ -461,8 +488,7 @@
                 <tr class="bg-gray-50 border-b border-gray-100">
                     <th class="px-6 py-4 text-[10px] font-black text-gray-500 uppercase tracking-wider">User Profile</th>
                     <th class="px-6 py-4 text-[10px] font-black text-gray-500 uppercase tracking-wider">Role</th>
-                    <th class="px-6 py-4 text-[10px] font-black text-gray-500 uppercase tracking-wider">Invites Created</th>
-                    <th class="px-6 py-4 text-[10px] font-black text-gray-500 uppercase tracking-wider">Drafts</th>
+                    <th class="px-6 py-4 text-[10px] font-black text-gray-500 uppercase tracking-wider">Join Date</th>
                     <th class="px-6 py-4 text-[10px] font-black text-gray-500 uppercase tracking-wider">Status</th>
                     <th class="px-6 py-4 text-[10px] font-black text-gray-500 uppercase tracking-wider text-right">Actions</th>
                 </tr>
@@ -470,9 +496,11 @@
         } else {
             thead.innerHTML = `
                 <tr class="bg-gray-50 border-b border-gray-100">
-                    <th class="px-6 py-4 text-[10px] font-black text-gray-500 uppercase tracking-wider">User Profile</th>
+                    <th class="px-6 py-4 text-[10px] font-black text-gray-500 uppercase tracking-wider">Mobile User</th>
                     <th class="px-6 py-4 text-[10px] font-black text-gray-500 uppercase tracking-wider">Provider</th>
                     <th class="px-6 py-4 text-[10px] font-black text-gray-500 uppercase tracking-wider">Active Pass</th>
+                    <th class="px-6 py-4 text-[10px] font-black text-gray-500 uppercase tracking-wider">Invites Created</th>
+                    <th class="px-6 py-4 text-[10px] font-black text-gray-500 uppercase tracking-wider">Drafts</th>
                     <th class="px-6 py-4 text-[10px] font-black text-gray-500 uppercase tracking-wider">Join Date</th>
                     <th class="px-6 py-4 text-[10px] font-black text-gray-500 uppercase tracking-wider">Feedback</th>
                     <th class="px-6 py-4 text-[10px] font-black text-gray-500 uppercase tracking-wider text-right">Actions</th>
@@ -506,7 +534,7 @@
             if (filteredStaff.length === 0) {
                 tbody.innerHTML = `
                     <tr>
-                        <td colSpan="6" class="py-16 text-center text-gray-400">
+                        <td colSpan="5" class="py-16 text-center text-gray-400">
                             <i data-lucide="users" class="w-10 h-10 text-gray-200 mx-auto mb-2"></i>
                             <p class="text-sm font-bold text-gray-500">No staff accounts found.</p>
                         </td>
@@ -522,6 +550,7 @@
                 const matchedRole = rolesList.find(r => r.id === user.roleId || r.id === user.role);
                 const roleLabel = matchedRole ? matchedRole.name : (user.roleId || user.role || 'editor');
                 const badgeColor = getRoleBadgeColor(user.roleId || user.role);
+                const joinDate = user.createdAt ? new Date(user.createdAt).toLocaleDateString('en-IN') : '—';
 
                 const statusHTML = user.isBlocked 
                     ? `<span class="flex items-center gap-1.5 text-red-600 text-xs font-bold bg-red-50 border border-red-200 px-2.5 py-1 rounded-lg w-fit">
@@ -602,16 +631,7 @@
                                 ${roleLabel}
                             </span>
                         </td>
-                        <td class="px-6 py-4">
-                            <span class="px-2.5 py-1 bg-emerald-50 text-emerald-700 text-xs font-bold rounded-lg border border-emerald-100">
-                                ${user.invitationCount || 0} cards
-                            </span>
-                        </td>
-                        <td class="px-6 py-4">
-                            <span class="px-2.5 py-1 bg-amber-50 text-amber-700 text-xs font-bold rounded-lg border border-amber-100">
-                                ${user.draftsCount || 0} drafts
-                            </span>
-                        </td>
+                        <td class="px-6 py-4 text-xs font-semibold text-gray-600 font-mono">${joinDate}</td>
                         <td class="px-6 py-4">${statusHTML}</td>
                         <td class="px-6 py-4 text-right">
                             <div class="flex justify-end items-center gap-2">${actionsHTML}</div>
@@ -625,7 +645,7 @@
             if (appUsersList.length === 0) {
                 tbody.innerHTML = `
                     <tr>
-                        <td colSpan="6" class="py-16 text-center text-gray-400">
+                        <td colSpan="8" class="py-16 text-center text-gray-400">
                             <i data-lucide="users" class="w-10 h-10 text-gray-200 mx-auto mb-2"></i>
                             <p class="text-sm font-bold text-gray-500">No mobile users found.</p>
                         </td>
@@ -714,6 +734,16 @@
                         </td>
                         <td class="px-6 py-4">${providerBadge}</td>
                         <td class="px-6 py-4">${activePassBadge}</td>
+                        <td class="px-6 py-4">
+                            <span class="px-2.5 py-1 bg-emerald-50 text-emerald-700 text-xs font-bold rounded-lg border border-emerald-100">
+                                ${user.invitationCount || 0} cards
+                            </span>
+                        </td>
+                        <td class="px-6 py-4">
+                            <span class="px-2.5 py-1 bg-amber-50 text-amber-700 text-xs font-bold rounded-lg border border-amber-100">
+                                ${user.draftsCount || 0} drafts
+                            </span>
+                        </td>
                         <td class="px-6 py-4 text-xs font-semibold text-gray-600 font-mono">${joinDate}</td>
                         <td class="px-6 py-4">${starsHTML}</td>
                         <td class="px-6 py-4 text-right">
@@ -986,14 +1016,16 @@
 
         const sub = user.subscription;
 
-        // Fetch user ratings and global subscription plans
+        // Fetch user ratings, plans, drafts, and cards
         const ratingsListDiv = document.getElementById('modal-ratings-list');
         ratingsListDiv.innerHTML = '<p class="text-xs text-gray-400 font-bold">Querying feedback...</p>';
 
         try {
-            const [resRatings, resPlans] = await Promise.all([
+            const [resRatings, resPlans, resDrafts, resCards] = await Promise.all([
                 fetch(`/api/app/ratings/${user.id}`, { headers }).then(r => r.ok ? r.json() : null),
-                fetch(`/api/subscriptions`, { headers }).then(r => r.json())
+                fetch(`/api/subscriptions`, { headers }).then(r => r.json()),
+                fetch(`/api/users/app-users/${user.id}/drafts`, { headers }).then(r => r.ok ? r.json() : []),
+                fetch(`/api/users/app-users/${user.id}/cards`, { headers }).then(r => r.ok ? r.json() : [])
             ]);
 
             modalPlansList = Array.isArray(resPlans) ? resPlans : [];
@@ -1024,6 +1056,44 @@
                 document.getElementById('modal-sub-expiry').value = exp.toISOString().split('T')[0];
                 document.getElementById('modal-sub-active').checked = true;
                 document.getElementById('modal-revoke-sub-btn').classList.add('hidden');
+            }
+
+            // Render drafts list inside modal
+            const draftsCount = Array.isArray(resDrafts) ? resDrafts.length : 0;
+            document.getElementById('modal-drafts-count').innerText = draftsCount;
+            const draftsListDiv = document.getElementById('modal-drafts-list');
+            if (draftsCount > 0) {
+                draftsListDiv.innerHTML = resDrafts.map(d => {
+                    const name = d.templateName || d.templateId || 'Untitled Template';
+                    const date = d.updatedAt ? new Date(d.updatedAt).toLocaleDateString('en-IN') : '—';
+                    return `
+                        <div class="flex flex-col p-1.5 bg-white border border-gray-150 rounded-xl text-[10px] font-semibold text-wedding-charcoal-dark shadow-xs mb-1 last:mb-0">
+                            <span class="font-extrabold truncate">${name}</span>
+                            <span class="text-[8px] text-gray-400 font-mono mt-0.5">Saved: ${date}</span>
+                        </div>
+                    `;
+                }).join('');
+            } else {
+                draftsListDiv.innerHTML = '<p class="text-[10px] text-gray-400 font-bold text-center py-4">No drafts</p>';
+            }
+
+            // Render cards/finalized list inside modal
+            const cardsCount = Array.isArray(resCards) ? resCards.length : 0;
+            document.getElementById('modal-cards-count').innerText = cardsCount;
+            const cardsListDiv = document.getElementById('modal-cards-list');
+            if (cardsCount > 0) {
+                cardsListDiv.innerHTML = resCards.map(c => {
+                    const name = c.templateName || c.templateId || 'Untitled Template';
+                    const date = c.updatedAt ? new Date(c.updatedAt).toLocaleDateString('en-IN') : '—';
+                    return `
+                        <div class="flex flex-col p-1.5 bg-white border border-gray-150 rounded-xl text-[10px] font-semibold text-wedding-charcoal-dark shadow-xs mb-1 last:mb-0">
+                            <span class="font-extrabold truncate">${name}</span>
+                            <span class="text-[8px] text-gray-400 font-mono mt-0.5">Downloaded: ${date}</span>
+                        </div>
+                    `;
+                }).join('');
+            } else {
+                cardsListDiv.innerHTML = '<p class="text-[10px] text-gray-400 font-bold text-center py-4">No completed designs</p>';
             }
 
             // Render rating feedback

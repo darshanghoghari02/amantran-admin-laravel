@@ -4,6 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Artisan;
 
 /**
  * Creates all application tables using the same id+data JSON schema
@@ -53,6 +54,9 @@ return new class extends Migration
                 ");
             }
         }
+
+        // Run seeders automatically after creating the tables
+        Artisan::call('db:seed', ['--force' => true]);
     }
 
     public function down(): void
